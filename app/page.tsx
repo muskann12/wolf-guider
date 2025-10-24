@@ -19,8 +19,12 @@ import {
   Brain,
   User,
   Globe,
-  Fingerprint
+  Fingerprint,
+  ArrowRight,
+  Calendar,
+  Clock
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // --- Updated Tools Data ---
 const TOOLS_DATA = [
@@ -134,11 +138,190 @@ const TOOLS_DATA = [
   }
 ];
 
-const BLOG_PREVIEWS = [
-  { title: 'Exploiting API Gateways with Rate Limit Bypass', date: 'Oct 23, 2025', category: 'Exploits' },
-  { title: 'The Future of Zero-Trust: A 2026 Forecast', date: 'Oct 15, 2025', category: 'Strategy' },
-  { title: 'Deep Dive: Cryptographic Flaws in WebAssembly', date: 'Oct 01, 2025', category: 'Analysis' },
+// Blog Posts Data
+const BLOG_POSTS = [
+  {
+    id: 1,
+    title: 'Why Cybersecurity Is Important for Individuals and Organizations',
+    excerpt: 'Hackers often target individuals and organizations because they usually don\'t have strong security systems. Just one attack can steal private information, shut down websites, or damage reputations.',
+    content: `Why Cybersecurity Is Important for Individuals and Organizations
+
+Hackers often target individuals and organizations because they usually don't have strong security systems. Just one attack can:
+- Steal your customer's private information
+- Shut down your website
+- Lose your money or damage your reputation
+
+Cybersecurity is the practice of protecting computer systems, networks, programs, and data from digital attacks, damage, or unauthorized access. That's why you wouldn't leave your shop unlocked overnight, right? The same goes for your computers and data.
+
+Cybersecurity Matters in Organizations
+Businesses are prime targets for cybercriminals. According to recent reports, nearly 43% of cyberattacks are aimed at small and medium-sized enterprises. Why? Because they often lack robust threat protection, making them easy prey.
+
+Without proper cybersecurity tools, a single breach can lead to:
+- Loss of customer trust
+- Legal liabilities
+- Financial ruin
+
+Simple Tips for Strong Cyber Defense
+Cybersecurity doesn't have to be scary or expensive. With the right mix of tools and awareness, even the smallest business can block hackers and protect its data.
+
+You don't need to be a tech expert to keep your business safe. Just follow these basic steps:
+- Use authentic, affordable tools
+- Train your staff not to click on suspicious links
+- Test your systems regularly
+- Watch for unusual computer activity
+- Pick services designed for small businesses
+
+Building an Affordable Cyber Defense Strategy
+To maximize protection while minimizing costs:
+- Use cybersecurity tools
+- Train employees on phishing and social engineering
+- Schedule regular penetration testing
+- Monitor systems with threat detection software
+- Choose platforms tailored for SMBs
+
+Ethical Hacking: How it Works
+An approach, helping you find weaknesses before hackers do.
+
+Ethical hacking means hiring someone (or using a tool) to break into your system on purpose to find and fix problems. It's like a security guard testing the doors and windows to make sure everything is locked tight.
+
+Ethical hacking, also known as penetration testing, is a powerful way to simulate real-world attacks and known vulnerabilities before malicious actors do. Tools like Nmap, Wireshark, and Kali Linux allow businesses to:
+- Audit network security
+- Identify weak points
+- Test incident response protocols
+
+By integrating ethical hacking into your cybersecurity strategy, you move from reactive to proactive defense.
+
+Why rely on scattered, unreliable free tools? WolfGuider provides complete, up-to-date protection with active threat reproduction and expert support — all at a budget-friendly price.`,
+    date: 'June 15, 2025',
+    slug: 'cybersecurity-threats-2025',
+    category: 'Threat Intelligence',
+    readTime: '8 min read',
+    image: '/images/blog1.png'
+  },
+  {
+    id: 2,
+    title: 'How to Spot a Fake Website Before You Click',
+    excerpt: 'In today\'s digital world, fake websites are everywhere, and they\'re becoming increasingly difficult to spot. Learn how to identify them before it\'s too late.',
+    content: `In today's digital world, fake websites are everywhere, and they're becoming increasingly difficult to spot. Cybercriminals use them to steal your personal information, trick you into downloading malware, or even hijack your accounts. Whether you're shopping online, checking emails, or browsing social media, knowing how to identify a fake site can save you from serious trouble.
+
+Why Fake Websites Are Dangerous
+Fake websites are often designed to closely resemble real ones. They may:
+- Steal your login details (like email or banking passwords)
+- Trick you into entering credit card info
+- Install malware or viruses on your device
+- Collect personal data for identity theft
+
+These scams are part of larger cybercrime tactics such as phishing, credential stealing, and malware attacks.
+
+How to Spot a Fake Website
+1. Check the URL Carefully
+Real websites usually start with https:// (the "s" means secure).
+Watch out for misspellings like faceb00k.com or amaz0n.net.
+
+2. Look for a Padlock Icon
+A padlock in the address bar means the site is encrypted.
+No padlock? Don't enter any personal info.
+
+3. Avoid Clicking Suspicious Links
+Links from unknown emails, Telegram bots, or pop-ups can lead to fake sites.
+Use a link checker tool or preview the URL before clicking.
+
+4. Check for Poor Design or Grammar
+Fake sites often have sloppy layouts, broken images, or spelling mistakes.
+Legit companies invest in clean, professional websites.
+
+5. Search the Website Name Online
+Look for reviews or warnings.
+Use OSINT tools like a real-time dashboard or open-source recon engine to investigate.
+
+6. Don't Trust Urgent Messages
+"Your account will be deleted!" or "Claim your prize now!" are classic phishing tactics.
+Stay calm and verify the source.
+
+7. Use a Breach Scanner
+Tools like a breached email scan API or a compromised account finder can help you check if your data has already been exposed.
+
+Tools That Can Help You Stay Safe
+- Phishing Page Detector: Scans websites for fake login pages
+- Dark Web Scanner: Checks if your info is leaked online
+- Username Search Tool: Finds where your username is being used
+- Email Tracker: Traces suspicious email sources
+- Browser OSINT Toolkit: Investigates websites directly from the browser
+
+Remember
+You don't have to be a cybersecurity expert to protect yourself. A few simple habits can make a big difference, such as checking URLs and avoiding suspicious links. Cybercriminals are getting smarter, but so can you. Stay alert, stay informed, and never click blindly.`,
+    date: 'June 20, 2025',
+    slug: 'zero-trust-architecture',
+    category: 'Network Security',
+    readTime: '10 min read',
+    image: '/images/blog2.png'
+  },
+  {
+    id: 3,
+    title: 'The Dangers of Public Wi-Fi and How to Stay Safe',
+    excerpt: 'Free Wi-Fi might be convenient, but it can also be a hacker\'s playground. Learn how attackers can intercept your data and how you can protect yourself.',
+    content: `Free Wi-Fi might be convenient, but it can also be a hacker's playground. Learn how attackers can intercept your data and how you can protect yourself.
+
+Public Wi-Fi networks, available in coffee shops, airports, hotels, and other public places, are incredibly convenient. However, they often lack proper security, making them prime targets for cybercriminals. When you connect to an unsecured public Wi-Fi network, you're potentially exposing your personal information, login credentials, and private data to anyone else on that network.
+
+How Hackers Exploit Public Wi-Fi
+
+1. Man-in-the-Middle Attacks
+Hackers position themselves between you and the connection point, allowing them to intercept and read your data.
+
+2. Evil Twin Attacks
+Cybercriminals set up fake Wi-Fi networks with legitimate-sounding names to trick users into connecting.
+
+3. Packet Sniffing
+Special software can capture and analyze data packets traveling through the network.
+
+4. Session Hijacking
+Attackers steal browser cookies to gain access to your accounts.
+
+Protective Measures
+
+- Use a VPN: Encrypts all data between your device and the internet
+- Avoid sensitive transactions: Don't bank or shop on public Wi-Fi
+- Verify network names: Confirm the official network name with staff
+- Use HTTPS: Ensure websites have the padlock icon
+- Turn off sharing: Disable file sharing and AirDrop
+- Keep software updated: Regular updates patch security vulnerabilities
+- Use mobile data: For sensitive activities, use your phone's hotspot
+
+Advanced Security Tips
+
+- Enable firewall protection on your device
+- Use a privacy screen in public places
+- Log out of accounts when finished
+- Clear browsing data after using public Wi-Fi
+- Consider using a mobile hotspot instead
+
+Business Considerations
+
+For remote workers and business travelers:
+- Always use corporate VPN when accessing company resources
+- Implement zero-trust network access
+- Use endpoint protection software
+- Enable device encryption
+- Follow company security policies strictly
+
+Remember: When it comes to public Wi-Fi, it's better to be safe than sorry. A few precautionary steps can prevent significant data breaches and identity theft. The convenience of free Wi-Fi should never compromise your digital security.`,
+    date: 'June 25, 2025',
+    slug: 'public-wifi-risks',
+    category: 'Network Security',
+    readTime: '7 min read',
+    image: '/images/blog3.png'
+  }
 ];
+
+const BLOG_PREVIEWS = BLOG_POSTS.map(post => ({
+  title: post.title,
+  date: post.date,
+  category: post.category,
+  slug: post.slug,
+  excerpt: post.excerpt,
+  readTime: post.readTime
+}));
 
 const COMM_LOG_ENTRIES = [
   { type: 'SUCCESS', message: 'Operator 55C9 achieved Level 2 Access on Code Breaker.' },
@@ -176,6 +359,9 @@ const Icon = ({ name, className = 'w-6 h-6' }: { name: string, className?: strin
     user: <User className={className} />,
     globe: <Globe className={className} />,
     fingerprint: <Fingerprint className={className} />,
+    arrowRight: <ArrowRight className={className} />,
+    calendar: <Calendar className={className} />,
+    clock: <Clock className={className} />,
   };
   return icons[name] || <div className={className}></div>;
 };
@@ -191,6 +377,164 @@ const WolfLogo = ({ className = 'w-40 h-32' }) => (
     }}
   />
 );
+
+// Blog Card Component
+const BlogCard = ({ post, onClick }: { post: any, onClick: () => void }) => {
+  return (
+    <div 
+      className="block bg-[#0c0018] p-4 sm:p-6 rounded-lg sm:rounded-xl border border-gray-800 transition-all duration-500 ease-out transform hover:border-red-600 hover:shadow-xl sm:hover:shadow-2xl hover:shadow-red-900/50 hover:scale-[1.02] neon-border cursor-pointer group"
+      onClick={onClick}
+    >
+      <div className="flex justify-between items-start mb-3">
+        <span className="text-xs font-mono text-red-500 bg-red-900/40 px-2 py-1 rounded-sm border border-red-700">
+          {post.category}
+        </span>
+        <div className="flex items-center text-gray-500 text-xs">
+          <Icon name="clock" className="w-3 h-3 mr-1" />
+          {post.readTime}
+        </div>
+      </div>
+      
+      <h4 className="text-base sm:text-lg lg:text-xl font-bold text-gray-100 mt-3 sm:mt-4 leading-snug group-hover:text-red-300 transition-colors duration-300 font-inter line-clamp-2">
+        {post.title}
+      </h4>
+      
+      <p className="text-gray-400 text-sm mt-2 line-clamp-3 leading-relaxed">
+        {post.excerpt}
+      </p>
+
+      <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-800">
+        <div className="flex items-center text-gray-500 text-xs">
+          <Icon name="calendar" className="w-3 h-3 mr-1" />
+          {post.date}
+        </div>
+        <div className="flex items-center text-red-500 text-sm font-mono group-hover:text-red-300 transition-colors">
+          Read More
+          <Icon name="arrowRight" className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Blog Page Component
+const BlogPage = ({ onBack }: { onBack: () => void }) => {
+  const [selectedPost, setSelectedPost] = useState<any>(null);
+
+  if (selectedPost) {
+    return (
+      <div className="min-h-screen bg-[#030005] py-8 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <button
+            onClick={() => setSelectedPost(null)}
+            className="flex items-center text-red-500 hover:text-red-300 font-mono mb-6 transition-colors"
+          >
+            <Icon name="arrowRight" className="w-4 h-4 mr-2 rotate-180" />
+            Back to All Blogs
+          </button>
+
+          {/* Blog Content */}
+          <article className="bg-[#0c0018] rounded-xl border border-red-700/50 p-6 sm:p-8">
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="text-xs font-mono text-red-500 bg-red-900/40 px-2 py-1 rounded-sm border border-red-700">
+                {selectedPost.category}
+              </span>
+              <span className="text-xs font-mono text-gray-500 bg-gray-900/40 px-2 py-1 rounded-sm border border-gray-700 flex items-center">
+                <Icon name="clock" className="w-3 h-3 mr-1" />
+                {selectedPost.readTime}
+              </span>
+              <span className="text-xs font-mono text-gray-500 bg-gray-900/40 px-2 py-1 rounded-sm border border-gray-700 flex items-center">
+                <Icon name="calendar" className="w-3 h-3 mr-1" />
+                {selectedPost.date}
+              </span>
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
+              {selectedPost.title}
+            </h1>
+
+            <div className="prose prose-invert prose-red max-w-none">
+              <div className="text-gray-300 leading-relaxed whitespace-pre-line">
+                {selectedPost.content}
+              </div>
+            </div>
+
+            {/* Share Section */}
+            <div className="mt-8 pt-6 border-t border-gray-800">
+              <h3 className="text-lg font-mono text-red-500 mb-4">Share this article</h3>
+              <div className="flex gap-3">
+                <button className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-mono text-sm transition-colors">
+                  Twitter
+                </button>
+                <button className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-mono text-sm transition-colors">
+                  LinkedIn
+                </button>
+                <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-mono text-sm transition-colors">
+                  Copy Link
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#030005] py-16 sm:py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12 sm:mb-16">
+          <button
+            onClick={onBack}
+            className="flex items-center text-red-500 hover:text-red-300 font-mono mb-6 transition-colors mx-auto"
+          >
+            <Icon name="arrowRight" className="w-4 h-4 mr-2 rotate-180" />
+            Back to Home
+          </button>
+          
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 tracking-wider">
+            WOLF<span className="text-red-500">GUIDER</span> INSIGHTS
+          </h1>
+          <p className="text-xl text-gray-400 font-mono max-w-2xl mx-auto">
+            Latest cybersecurity research, threat analysis, and security insights from our elite team.
+          </p>
+        </div>
+
+        {/* Blog Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {BLOG_POSTS.map((post) => (
+            <BlogCard 
+              key={post.id} 
+              post={post} 
+              onClick={() => setSelectedPost(post)}
+            />
+          ))}
+        </div>
+
+        {/* Newsletter Signup */}
+        <div className="mt-16 text-center">
+          <div className="bg-[#0c0018] rounded-xl border border-red-700/50 p-8 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-white mb-2">Stay Updated</h3>
+            <p className="text-gray-400 mb-6">Get the latest cybersecurity insights delivered to your inbox.</p>
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input 
+                type="email" 
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-red-500 focus:outline-none transition-colors"
+              />
+              <button className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors font-mono">
+                SUBSCRIBE
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Mobile Menu Component
 const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
   if (!isOpen) return null;
@@ -826,6 +1170,7 @@ const WolfGuider = () => {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [isAccessGranted, setAccessGranted] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<'home' | 'blog'>('home');
 
   const handleAccessClick = () => {
     window.open(TELEGRAM_URL, '_blank');
@@ -862,6 +1207,10 @@ const WolfGuider = () => {
   const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   const statusColor = remainingTime > 30 ? 'text-green-400' : 'text-yellow-400';
   const statusText = remainingTime > 0 ? (remainingTime > 30 ? 'STANDBY' : 'INITIATING...') : 'ACTIVE';
+
+  if (currentView === 'blog') {
+    return <BlogPage onBack={() => setCurrentView('home')} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#030005] font-inter text-white overflow-x-hidden relative">
@@ -976,7 +1325,12 @@ const WolfGuider = () => {
           <h1 className="text-xl sm:text-2xl font-extrabold text-red-500 font-mono tracking-widest neon-glow-text">WOLFGUIDER</h1>
           <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-6 text-sm font-semibold text-gray-400 font-mono">
             <a href="#tools" className="hover:text-red-500 transition-colors duration-300 hidden sm:block">TOOLS</a>
-            <a href="#blog" className="hover:text-red-500 transition-colors duration-300 hidden sm:block">INSIGHTS</a>
+            <button 
+              onClick={() => setCurrentView('blog')}
+              className="hover:text-red-500 transition-colors duration-300 hidden sm:block"
+            >
+              INSIGHTS
+            </button>
             <button 
               onClick={handleAccessClick}
               className="px-3 py-1 sm:px-4 sm:py-2 lg:px-5 lg:py-2 text-xs sm:text-sm lg:text-base font-bold rounded-lg bg-red-700 hover:bg-red-600 transition-all shadow-lg shadow-red-900/50 neon-border"
@@ -1039,10 +1393,8 @@ const WolfGuider = () => {
                   >
                     LIVE EXPLOIT SIMULATION
                   </button>
-                  <a
-                    href={isAccessGranted ? TELEGRAM_URL : "#blog"}
-                    target={isAccessGranted ? "_blank" : "_self"}
-                    rel={isAccessGranted ? "noopener noreferrer" : ""}
+                  <button
+                    onClick={() => setCurrentView('blog')}
                     className={`px-4 py-3 sm:px-6 sm:py-3 lg:px-8 lg:py-4 xl:px-10 xl:py-4 w-full sm:w-auto text-sm sm:text-base lg:text-lg xl:text-xl font-semibold rounded-lg sm:rounded-xl transition-all duration-500 ease-in-out border-2 transform hover:scale-[1.03] sm:hover:scale-[1.02] text-center ${
                       isAccessGranted
                         ? 'bg-green-700 hover:bg-green-600 border-green-700 text-white shadow-lg shadow-green-900/50'
@@ -1052,7 +1404,7 @@ const WolfGuider = () => {
                     {isAccessGranted ?
                       <span className="flex items-center justify-center"><Icon name="fire" className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2" /> SECRET ACCESS</span>
                       : "READ INSIGHTS"}
-                  </a>
+                  </button>
                 </div>
 
                 <div id="secret-content" className="mt-4 sm:mt-6 lg:mt-8">
@@ -1101,20 +1453,19 @@ const WolfGuider = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {BLOG_PREVIEWS.map((post, index) => (
-                <a
-                  key={index}
-                  href="#"
-                  className="block bg-[#0c0018] p-4 sm:p-6 rounded-lg sm:rounded-xl border border-gray-800 transition-all duration-500 ease-out transform hover:border-red-600 hover:shadow-xl sm:hover:shadow-2xl hover:shadow-red-900/50 hover:scale-[1.02] neon-border"
-                >
-                  <span className="text-xs font-mono text-red-500 bg-red-900/40 px-2 py-1 rounded-sm border border-red-700">{post.category}</span>
-                  <h4 className="text-base sm:text-lg lg:text-xl font-bold text-gray-100 mt-3 sm:mt-4 leading-snug group-hover:text-red-300 transition-colors duration-300 font-inter line-clamp-2">{post.title}</h4>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3 font-mono">{post.date}</p>
-                </a>
+                <BlogCard 
+                  key={index} 
+                  post={post} 
+                  onClick={() => setCurrentView('blog')}
+                />
               ))}
-              <a href="#blog" className="flex flex-col items-center justify-center p-4 sm:p-6 border border-dashed border-red-700/80 rounded-lg sm:rounded-xl text-red-500 hover:border-red-500 hover:text-red-300 transition-all duration-500 transform hover:scale-[1.02] neon-glow-text">
+              <button 
+                onClick={() => setCurrentView('blog')}
+                className="flex flex-col items-center justify-center p-4 sm:p-6 border border-dashed border-red-700/80 rounded-lg sm:rounded-xl text-red-500 hover:border-red-500 hover:text-red-300 transition-all duration-500 transform hover:scale-[1.02] neon-glow-text"
+              >
                 <Icon name="book" className="w-8 h-8 sm:w-10 sm:h-10 mb-2"/>
                 <span className="text-sm sm:text-base font-mono">VIEW ALL ARTICLES</span>
-              </a>
+              </button>
             </div>
           </div>
         </section>

@@ -22,9 +22,10 @@ import {
   Fingerprint,
   ArrowRight,
   Calendar,
-  Clock
+  Clock,
+  AlertTriangle,
+  HelpCircle
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 // --- Updated Tools Data ---
 const TOOLS_DATA = [
@@ -44,7 +45,14 @@ const TOOLS_DATA = [
     command: 'recon @username',
     output: 'Comprehensive reports delivered via Telegram',
     ip: '192.168.1.10', 
-    port_scan: true 
+    port_scan: true,
+    execution_steps: [
+      'Initializing OSINT framework...',
+      'Scanning public databases and social media...',
+      'Cross-referencing digital footprints...',
+      'Generating intelligence report...',
+      'Report compilation complete!'
+    ]
   },
   { 
     id: 'phishing-toolkit', 
@@ -62,7 +70,14 @@ const TOOLS_DATA = [
     command: 'phish gmail',
     output: 'Credentials + IP/device information',
     ip: '10.0.0.55', 
-    port_scan: false 
+    port_scan: false,
+    execution_steps: [
+      'Deploying phishing infrastructure...',
+      'Configuring target templates...',
+      'Setting up credential capture...',
+      'Evasion techniques activated...',
+      'Ready for social engineering test!'
+    ]
   },
   { 
     id: 'payload-builder', 
@@ -80,7 +95,14 @@ const TOOLS_DATA = [
     command: 'build --android --keylogger',
     output: 'Clean executable file',
     ip: '203.0.113.12', 
-    port_scan: true 
+    port_scan: true,
+    execution_steps: [
+      'Compiling payload source code...',
+      'Applying obfuscation layers...',
+      'Bypassing AV signature detection...',
+      'Embedding persistence mechanism...',
+      'Payload ready for deployment!'
+    ]
   },
   { 
     id: 'bug-bounty-suite', 
@@ -98,7 +120,14 @@ const TOOLS_DATA = [
     command: 'bounty --target domain.com',
     output: 'Detailed vulnerability report',
     ip: '172.16.1.100', 
-    port_scan: true 
+    port_scan: true,
+    execution_steps: [
+      'Scanning target infrastructure...',
+      'Enumerating subdomains and endpoints...',
+      'Testing for OWASP top 10 vulnerabilities...',
+      'Validating security misconfigurations...',
+      'Vulnerability assessment complete!'
+    ]
   },
   { 
     id: 'ai-exploit-assistant', 
@@ -116,7 +145,14 @@ const TOOLS_DATA = [
     command: 'aihelp',
     output: 'Code snippets with explanations',
     ip: '10.1.1.50', 
-    port_scan: false 
+    port_scan: false,
+    execution_steps: [
+      'Initializing AI security model...',
+      'Analyzing exploit requirements...',
+      'Generating custom payload code...',
+      'Optimizing attack vector...',
+      'AI exploit ready for execution!'
+    ]
   },
   { 
     id: 'anonymous-suite', 
@@ -134,7 +170,14 @@ const TOOLS_DATA = [
     command: 'anonstart',
     output: 'Secure anonymous session',
     ip: '192.168.100.1', 
-    port_scan: false 
+    port_scan: false,
+    execution_steps: [
+      'Establishing encrypted tunnel...',
+      'Routing through multiple VPN nodes...',
+      'Randomizing network fingerprints...',
+      'Obfuscating traffic patterns...',
+      'Anonymous session established!'
+    ]
   }
 ];
 
@@ -362,20 +405,24 @@ const Icon = ({ name, className = 'w-6 h-6' }: { name: string, className?: strin
     arrowRight: <ArrowRight className={className} />,
     calendar: <Calendar className={className} />,
     clock: <Clock className={className} />,
+    alert: <AlertTriangle className={className} />,
+    help: <HelpCircle className={className} />,
   };
   return icons[name] || <div className={className}></div>;
 };
 
-// Simplified, bold Logo
-const WolfLogo = ({ className = 'w-40 h-32' }) => (
-  <img
-    src="/logo.png"
-    alt="WolfGuider Logo"
-    className={`drop-shadow-[0_0_10px_rgba(239,68,68,0.9)] ${className}`}
-    style={{
-      filter: 'drop-shadow(0 0 10px rgba(239,68,68,0.9))',
-    }}
-  />
+// Professional Logo Component
+const WolfLogo = ({ className = "w-40 h-32" }) => (
+  <div className={`flex items-center justify-center ${className}`}>
+    <div className="text-center">
+      <div className="text-4xl font-bold text-red-500 tracking-widest font-mono">
+        WG
+      </div>
+      <div className="text-xs text-gray-400 font-mono mt-1 tracking-widest">
+        WOLFGUIDER
+      </div>
+    </div>
+  </div>
 );
 
 // Blog Card Component
@@ -554,18 +601,125 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
         <nav className="p-4 space-y-4">
           <a href="#tools" className="block text-gray-300 hover:text-red-500 font-mono py-2" onClick={onClose}>TOOLS</a>
           <a href="#blog" className="block text-gray-300 hover:text-red-500 font-mono py-2" onClick={onClose}>INSIGHTS</a>
-          <a href="#" className="block text-gray-300 hover:text-red-500 font-mono py-2" onClick={onClose}>PRICING</a>
-          <button className="w-full bg-red-700 hover:bg-red-600 text-white font-mono py-2 px-4 rounded-lg transition-colors">
-            ACCESS
-          </button>
+          <a href="#pricing" className="block text-gray-300 hover:text-red-500 font-mono py-2" onClick={onClose}>PRICING</a>
+          <a
+            href={TELEGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full bg-red-700 hover:bg-red-600 text-white font-mono py-2 px-4 rounded-lg transition-colors text-center block"
+          >
+            GET ACCESS
+          </a>
         </nav>
       </div>
     </div>
   );
 };
 
-// Tool Execution Modal
+// Struggle Popup Component
+const StrugglePopup = ({ isVisible, onClose }: { isVisible: boolean, onClose: () => void }) => {
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/90">
+      <div className="w-full max-w-md bg-[#0c0018] border-4 border-red-700 rounded-xl overflow-hidden transform transition-all duration-500 neon-border shadow-[0_0_30px_rgba(239,68,68,0.7)]">
+        
+        {/* Popup Header */}
+        <div className="flex justify-between items-center p-4 bg-red-900/40 border-b border-red-700">
+          <h3 className="text-xl font-mono text-red-300 font-bold flex items-center">
+            <Icon name="alert" className="w-6 h-6 mr-2" />
+            ATTENTION OPERATOR
+          </h3>
+          <button onClick={onClose} className="text-red-300 hover:text-white transition-colors">
+            <Icon name="close" className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Popup Content */}
+        <div className="p-6 font-mono">
+          <div className="text-center mb-6">
+            <Icon name="help" className="w-16 h-16 text-red-500 mx-auto mb-4 animate-pulse" />
+            <h4 className="text-2xl font-bold text-white mb-2">STRUGGLING WITH BUG BOUNTY?</h4>
+            <p className="text-gray-300 text-lg">
+              Are you facing issues with:
+            </p>
+          </div>
+
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="bug" className="w-5 h-5 text-red-500 mr-3" />
+              <span className="text-gray-300">Finding vulnerabilities in web applications?</span>
+            </div>
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="shield" className="w-5 h-5 text-red-500 mr-3" />
+              <span className="text-gray-300">Bypassing security protections?</span>
+            </div>
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="code" className="w-5 h-5 text-red-500 mr-3" />
+              <span className="text-gray-300">Writing effective exploits?</span>
+            </div>
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="globe" className="w-5 h-5 text-red-500 mr-3" />
+              <span className="text-gray-300">Understanding target infrastructure?</span>
+            </div>
+          </div>
+
+          <p className="text-red-400 text-center text-sm mb-6">
+            Our advanced tools and expert guidance can help you overcome these challenges!
+          </p>
+        </div>
+
+        {/* Popup Footer */}
+        <div className="p-4 bg-red-900/40 border-t border-red-700 flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors font-mono"
+          >
+            I'M FINE, CONTINUE
+          </button>
+          <a
+            href={TELEGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClose}
+            className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors font-mono text-center flex items-center justify-center"
+          >
+            <Icon name="terminal" className="w-5 h-5 mr-2" />
+            GET HELP NOW
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Tool Execution Modal - Enhanced with realistic execution steps
 const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose: () => void, telegramUrl: string }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [executionComplete, setExecutionComplete] = useState(false);
+
+  useEffect(() => {
+    if (!tool || !tool.execution_steps) return;
+    
+    if (isExecuting && currentStep < tool.execution_steps.length) {
+      const timer = setTimeout(() => {
+        setCurrentStep(prev => prev + 1);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    } else if (currentStep >= tool.execution_steps.length && isExecuting) {
+      setIsExecuting(false);
+      setExecutionComplete(true);
+    }
+  }, [currentStep, isExecuting, tool?.execution_steps?.length]);
+
+  const startExecution = () => {
+    setIsExecuting(true);
+    setCurrentStep(0);
+    setExecutionComplete(false);
+  };
+
   if (!tool) return null;
 
   return (
@@ -575,7 +729,7 @@ const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose
         {/* Modal Header */}
         <div className="flex justify-between items-center p-3 sm:p-4 bg-red-900/40 border-b border-red-700">
           <h5 className="text-lg sm:text-xl font-mono text-red-300 font-bold uppercase tracking-wider flex items-center">
-            <Icon name="fire" className="w-5 h-5 sm:w-6 sm:h-6 mr-2"/> {tool.name}
+            <Icon name="terminal" className="w-5 h-5 sm:w-6 sm:h-6 mr-2"/> {tool.name}
           </h5>
           <button onClick={onClose} className="text-red-300 hover:text-white transition-colors p-1 rounded-md hover:bg-red-800/50" aria-label="Close demo">
             <Icon name="close" className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -584,11 +738,29 @@ const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose
 
         {/* Modal Content */}
         <div className="p-4 sm:p-6 font-mono">
-          <p className="text-base sm:text-xl font-extrabold text-red-400 mb-4 sm:mb-6 neon-glow-text text-center sm:text-left">
-            **System takeover is imminent.**
-          </p>
+          {/* Execution Steps */}
+          <div className="mb-4 sm:mb-6">
+            <div className="text-red-400 font-bold mb-3 text-sm sm:text-base">EXECUTION PROGRESS:</div>
+            <div className="space-y-2 bg-black/50 p-3 rounded border border-gray-700 max-h-40 overflow-y-auto">
+              {tool.execution_steps.map((step: string, index: number) => (
+                <div 
+                  key={index}
+                  className={`text-xs sm:text-sm transition-all duration-500 ${
+                    index < currentStep 
+                      ? 'text-green-400' 
+                      : index === currentStep && isExecuting
+                      ? 'text-yellow-400 animate-pulse'
+                      : 'text-gray-600'
+                  }`}
+                >
+                  {index < currentStep ? '✓' : index === currentStep && isExecuting ? '⟳' : '○'} {step}
+                </div>
+              ))}
+            </div>
+          </div>
 
-          <div className="space-y-3 sm:space-y-4 text-sm">
+          {/* System Information */}
+          <div className="space-y-3 sm:space-y-4 text-sm mb-4 sm:mb-6">
             <div className="p-2 sm:p-3 bg-gray-900 rounded border border-gray-700">
               <span className="text-gray-500">TARGET IP: </span>
               <span className="text-green-400 font-bold">{tool.ip}</span>
@@ -600,26 +772,52 @@ const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose
                 {tool.port_scan ? `Active Port Scanning initiated` : 'Static Protocol Deployment'}
               </span>
             </div>
+
+            <div className="p-2 sm:p-3 bg-gray-900 rounded border border-gray-700">
+              <span className="text-gray-500">COMMAND: </span>
+              <span className="text-green-400">$ {tool.command}</span>
+            </div>
           </div>
 
-          <p className="text-gray-300 mt-4 sm:mt-6 text-sm sm:text-base text-center sm:text-left">
-            Tool execution configured and running. Next stage requires interactive confirmation.
-          </p>
+          {/* Status Message */}
+          {executionComplete ? (
+            <div className="p-3 bg-green-900/30 border border-green-700 rounded text-green-400 text-center">
+              ✓ Tool execution completed successfully! Ready for full deployment.
+            </div>
+          ) : isExecuting ? (
+            <div className="p-3 bg-yellow-900/30 border border-yellow-700 rounded text-yellow-400 text-center animate-pulse">
+              ⟳ Tool execution in progress... Please wait.
+            </div>
+          ) : (
+            <div className="p-3 bg-blue-900/30 border border-blue-700 rounded text-blue-400 text-center">
+              ⚡ Tool configured and ready for execution.
+            </div>
+          )}
         </div>
 
         {/* Modal Footer/CTA */}
-        <div className="p-3 sm:p-4 bg-red-900/40 border-t border-red-700 flex justify-center sm:justify-end">
+        <div className="p-3 sm:p-4 bg-red-900/40 border-t border-red-700 flex flex-col sm:flex-row gap-2 justify-between items-center">
+          {!isExecuting && !executionComplete && (
+            <button
+              onClick={startExecution}
+              className="px-4 py-2 text-sm sm:text-base font-bold rounded-lg bg-green-600 hover:bg-green-500 transition-all shadow-lg shadow-green-900/50 flex items-center justify-center w-full sm:w-auto"
+            >
+              <Icon name="play" className="w-4 h-4 mr-2" />
+              START EXECUTION
+            </button>
+          )}
+          
           <a
             href={telegramUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
-            className="px-4 py-2 sm:px-6 sm:py-2 text-sm sm:text-base font-bold rounded-lg bg-red-600 hover:bg-red-500 transition-all shadow-lg shadow-red-900/50 neon-border flex items-center justify-center"
+            className="px-4 py-2 text-sm sm:text-base font-bold rounded-lg bg-red-600 hover:bg-red-500 transition-all shadow-lg shadow-red-900/50 flex items-center justify-center w-full sm:w-auto"
           >
             <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
               <path d="M21 8.25c0-.98-.67-1.81-1.63-1.98l-15.3-2.61c-1.12-.19-2.12.78-2.12 1.91v4.44c0 .87.57 1.63 1.39 1.88l1.41.43c.2.06.32.26.32.48v5.82c0 .91.95 1.54 1.81 1.25l2.45-.82c.42-.14.88-.06 1.25.21l1.72 1.21c.2.14.4.21.61.21.23 0 .44-.08.62-.25l7.19-7.25c.66-.67.66-1.76 0-2.43l-3.52-3.56c-.66-.67-1.74-.67-2.4 0l-1.34 1.35c-.13.13-.2.3-.2.48v2.96c0 .28-.23.51-.51.51h-2.17c-.28 0-.51-.23-.51-.51v-4.44c0-.26-.13-.51-.35-.65l-1.42-.88c-.28-.18-.62-.27-.96-.27h-2.1c-.28 0-.51-.23-.51-.51v-2.1c0-.28.23-.51.51-.51h2.1c.34 0 .68.09.96.27l1.42.88c.22.14.35.39.35.65v2.96c0 .28.23.51.51.51h2.17c.28 0 .51.23.51.51v-.44c0-.98.67-1.81 1.63-1.98l7.19-1.23c.95-.16 1.81.56 1.81 1.53z" />
             </svg>
-            TELEGRAM BOT
+            GET FULL ACCESS
           </a>
         </div>
       </div>
@@ -749,117 +947,6 @@ const LiveAuditFeedModal = ({ isVisible, onClose }: { isVisible: boolean, onClos
             CAPTURE & SHARE
           </button>
         </div>
-      </div>
-    </div>
-  );
-};
-
-// Access Code Breaker Mini-Game - Mobile Optimized
-const AccessCodeBreaker = ({ setAccessGranted }: { setAccessGranted: (value: boolean) => void }) => {
-  const [isActive, setIsActive] = useState(false);
-  const [code, setCode] = useState(['-', '-', '-', '-']);
-  const [input, setInput] = useState<string[]>([]);
-  const [status, setStatus] = useState('INIT');
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const initialBestTime = typeof window !== 'undefined' ? localStorage.getItem('wg_best_time') || Infinity : Infinity;
-  const [bestTime, setBestTime] = useState(typeof initialBestTime === 'string' && initialBestTime !== 'Infinity' ? parseFloat(initialBestTime) : Infinity);
-  const challengeDigits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-  const startChallenge = () => {
-    const newCode = Array(4).fill(0).map(() => challengeDigits[Math.floor(Math.random() * challengeDigits.length)].toString());
-    setCode(newCode);
-    setInput([]);
-    setStatus('ACTIVE');
-    setStartTime(Date.now());
-    setIsActive(true);
-    setAccessGranted(false);
-  };
-
-  const handleInput = (digit: string) => {
-    if (status !== 'ACTIVE') return;
-
-    const newLength = input.length + 1;
-    const newInput = [...input, digit.toString()];
-
-    setInput(newInput);
-
-    if (newInput[newLength - 1] !== code[newLength - 1]) {
-      setStatus('FAIL');
-      setIsActive(false);
-      setTimeout(() => setStatus('INIT'), 1500);
-      return;
-    }
-
-    if (newLength === 4 && startTime) {
-      const endTime = Date.now();
-      const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
-
-      setStatus('WIN');
-      setIsActive(false);
-      setAccessGranted(true);
-
-      if (parseFloat(timeTaken) < bestTime || bestTime === Infinity) {
-        setBestTime(parseFloat(timeTaken));
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('wg_best_time', timeTaken);
-        }
-      }
-      setTimeout(() => setStatus('INIT'), 3000);
-    }
-  };
-
-  const displayedCode = code.map((c, i) => {
-    if (status === 'INIT') return '-';
-    if (status === 'WIN') return c;
-    if (status === 'FAIL') return 'X';
-    return input[i] || '_';
-  });
-
-  const getStatusStyle = () => {
-    switch(status) {
-      case 'WIN': return 'bg-green-900 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.7)]';
-      case 'FAIL': return 'bg-red-900 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.7)]';
-      case 'ACTIVE': return 'bg-yellow-900/50 border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)] animate-pulse';
-      default: return 'bg-gray-900/80 border-red-700 shadow-red-900/50';
-    }
-  };
-
-  return (
-    <div className={`fixed top-16 sm:top-20 right-2 sm:right-4 z-40 p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 ${getStatusStyle()} border shadow-lg sm:shadow-xl`}>
-      {/* Display / Trigger */}
-      <button
-        onClick={status === 'ACTIVE' ? () => {} : startChallenge}
-        className="font-mono text-lg sm:text-xl font-bold w-28 sm:w-36 tracking-wider flex items-center justify-center text-white"
-        title={status === 'ACTIVE' ? "Sequence Active" : "Click to Initiate Code Sequence"}
-      >
-        {status === 'WIN' ?
-          <span className="flex items-center text-xs sm:text-sm text-green-400"><Icon name="eye" className="w-4 h-4 sm:w-5 sm:h-5 mr-1" /> ACCESS</span>
-          : `[${displayedCode.join('')}]`}
-      </button>
-
-      {/* Keypad and Status */}
-      {isActive && status === 'ACTIVE' && (
-        <div className="mt-2 sm:mt-3 p-2 bg-gray-950/90 rounded border border-red-900/50">
-          <p className="font-mono text-red-400 text-xs mb-2 text-center">SEQ: {code.join('')}</p>
-          <div className="grid grid-cols-3 gap-1">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(digit => (
-              <button
-                key={digit}
-                onClick={() => handleInput(digit.toString())}
-                className="font-mono text-sm sm:text-lg h-8 sm:h-10 bg-gray-800 text-red-400 hover:bg-red-700 hover:text-white rounded transition-colors border border-gray-700"
-              >
-                {digit}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Status Messages */}
-      <div className="text-center mt-1 sm:mt-2 text-xs font-mono">
-        {status === 'WIN' && startTime && <span className="text-white">TIME: {((Date.now() - startTime) / 1000).toFixed(2)}s</span>}
-        {status === 'FAIL' && <span className="text-white">FAILED</span>}
-        {status === 'INIT' && bestTime !== Infinity && <span className="text-gray-300">BEST: {bestTime}s</span>}
       </div>
     </div>
   );
@@ -1167,46 +1254,26 @@ const WolfGuider = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [activeTool, setActiveTool] = useState<typeof TOOLS_DATA[0] | null>(null);
-  const [timeElapsed, setTimeElapsed] = useState(0);
-  const [isAccessGranted, setAccessGranted] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentView, setCurrentView] = useState<'home' | 'blog'>('home');
+  const [showStrugglePopup, setShowStrugglePopup] = useState(false);
 
   const handleAccessClick = () => {
     window.open(TELEGRAM_URL, '_blank');
   };
 
-  // Timer Logic
+  // Timer Logic for Struggle Popup
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowVideoModal(true);
-    }, 120000);
-
-    const timeTracker = setInterval(() => {
-      setTimeElapsed(prev => {
-        if (prev >= 120) {
-          clearInterval(timeTracker);
-          return 120;
-        }
-        return prev + 1;
-      });
-    }, 1000);
+    const struggleTimer = setTimeout(() => {
+      setShowStrugglePopup(true);
+    }, 120000); // 2 minutes
 
     setUserId(crypto.randomUUID ? crypto.randomUUID() : `user-${Date.now()}`);
 
     return () => {
-      clearTimeout(timer);
-      clearInterval(timeTracker);
+      clearTimeout(struggleTimer);
     };
   }, []);
-
-  // Calculate status for indicator
-  const remainingTime = 120 - timeElapsed;
-  const minutes = Math.floor(remainingTime / 60);
-  const seconds = remainingTime % 60;
-  const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  const statusColor = remainingTime > 30 ? 'text-green-400' : 'text-yellow-400';
-  const statusText = remainingTime > 0 ? (remainingTime > 30 ? 'STANDBY' : 'INITIATING...') : 'ACTIVE';
 
   if (currentView === 'blog') {
     return <BlogPage onBack={() => setCurrentView('home')} />;
@@ -1239,19 +1306,6 @@ const WolfGuider = () => {
         .neon-border:hover {
           border-color: #f87171;
           box-shadow: 0 0 20px rgba(239, 68, 68, 0.6), inset 0 0 10px rgba(239, 68, 68, 0.2);
-        }
-
-        /* Glitch effect for the main title */
-        .glitch-text {
-          animation: glitch 1.5s linear infinite alternate;
-        }
-
-        @keyframes glitch {
-          0% { transform: translate(0); text-shadow: 2px 2px #dc2626, -2px -2px #0f172a; }
-          25% { transform: translate(-2px, 2px); text-shadow: -2px 2px #dc2626, 2px -2px #0f172a; }
-          50% { transform: translate(2px, -2px); text-shadow: 2px -2px #dc2626, -2px 2px #0f172a; }
-          75% { transform: translate(-2px, -2px); text-shadow: -2px -2px #dc2626, 2px 2px #0f172a; }
-          100% { transform: translate(2px, 2px); text-shadow: 2px 2px #dc2626, -2px -2px #0f172a; }
         }
 
         /* Grid Background for Hero Section */
@@ -1331,11 +1385,12 @@ const WolfGuider = () => {
             >
               INSIGHTS
             </button>
+            <a href="#pricing" className="hover:text-red-500 transition-colors duration-300 hidden sm:block">PRICING</a>
             <button 
               onClick={handleAccessClick}
               className="px-3 py-1 sm:px-4 sm:py-2 lg:px-5 lg:py-2 text-xs sm:text-sm lg:text-base font-bold rounded-lg bg-red-700 hover:bg-red-600 transition-all shadow-lg shadow-red-900/50 neon-border"
             >
-              ACCESS
+              GET ACCESS
             </button>
             <button 
               onClick={() => setMobileMenuOpen(true)}
@@ -1350,9 +1405,6 @@ const WolfGuider = () => {
       {/* Mobile Menu */}
       <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
-      {/* Access Code Breaker */}
-      <AccessCodeBreaker setAccessGranted={setAccessGranted} />
-
       {/* Main Content */}
       <main>
         <div className="hero-background min-h-[90vh] flex items-center justify-center p-3 sm:p-4 relative">
@@ -1361,20 +1413,20 @@ const WolfGuider = () => {
           <div className="z-10 w-full max-w-7xl py-10 sm:py-16 lg:py-20 px-3 sm:px-4 flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-10">
             {/* Left Column: Hero Content */}
             <div className="lg:w-3/4">
-              {/* Audit Status Indicator */}
-              <div className={`mb-6 sm:mb-8 max-w-lg mx-auto p-2 text-center rounded-lg font-mono text-xs sm:text-sm tracking-widest border ${remainingTime > 0 ? 'animate-pulse' : ''} ${statusColor === 'text-green-400' ? 'border-green-700/50 bg-green-900/20' : 'border-yellow-700/50 bg-yellow-900/20'}`}>
-                SYSTEM: <span className={`${statusColor} font-bold`}>{statusText}</span> | T-{timeString}
+              {/* Professional Status Indicator */}
+              <div className="mb-6 sm:mb-8 max-w-lg mx-auto p-3 text-center rounded-lg font-mono text-sm sm:text-base tracking-widest border border-green-700/50 bg-green-900/20 text-green-400">
+                SYSTEM: <span className="font-bold">OPERATIONAL</span> | STATUS: <span className="font-bold">SECURE</span>
               </div>
 
               {/* Central Hyper-Glow Panel */}
               <div className="text-center p-4 sm:p-6 lg:p-8 xl:p-12 rounded-xl sm:rounded-2xl lg:rounded-3xl max-w-5xl mx-auto transition-all duration-1000 bg-black/80 neon-border z-10 shadow-[0_0_25px_rgba(239,68,68,0.5)]">
                 <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-3 lg:space-x-4 mb-3 sm:mb-4">
-                  <span className="text-sm sm:text-base lg:text-lg font-mono text-red-500 tracking-widest neon-glow-text"> &lt; INITIATE &gt; </span>
+                  <span className="text-sm sm:text-base lg:text-lg font-mono text-red-500 tracking-widest neon-glow-text"> &lt; ELITE &gt; </span>
                   <WolfLogo className="w-12 h-10 sm:w-16 sm:h-12 lg:w-20 lg:h-16 transition-all duration-700 hover:scale-110" />
-                  <span className="text-sm sm:text-base lg:text-lg font-mono text-red-500 tracking-widest neon-glow-text"> &lt; SEQUENCE &gt; </span>
+                  <span className="text-sm sm:text-base lg:text-lg font-mono text-red-500 tracking-widest neon-glow-text"> &lt; SECURITY &gt; </span>
                 </div>
 
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-extrabold tracking-tighter leading-none text-red-100 glitch-text">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-extrabold tracking-tighter leading-none text-red-100">
                   WOLF<span className="text-red-600">GUIDER</span>
                 </h1>
                 <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-mono text-red-400 mt-2 sm:mt-4 tracking-widest neon-glow-text">
@@ -1395,24 +1447,16 @@ const WolfGuider = () => {
                   </button>
                   <button
                     onClick={() => setCurrentView('blog')}
-                    className={`px-4 py-3 sm:px-6 sm:py-3 lg:px-8 lg:py-4 xl:px-10 xl:py-4 w-full sm:w-auto text-sm sm:text-base lg:text-lg xl:text-xl font-semibold rounded-lg sm:rounded-xl transition-all duration-500 ease-in-out border-2 transform hover:scale-[1.03] sm:hover:scale-[1.02] text-center ${
-                      isAccessGranted
-                        ? 'bg-green-700 hover:bg-green-600 border-green-700 text-white shadow-lg shadow-green-900/50'
-                        : 'bg-gray-900 hover:bg-gray-800 border-gray-800 text-gray-300'
-                    }`}
+                    className="px-4 py-3 sm:px-6 sm:py-3 lg:px-8 lg:py-4 xl:px-10 xl:py-4 w-full sm:w-auto text-sm sm:text-base lg:text-lg xl:text-xl font-semibold rounded-lg sm:rounded-xl transition-all duration-500 ease-in-out border-2 transform hover:scale-[1.03] sm:hover:scale-[1.02] text-center bg-gray-900 hover:bg-gray-800 border-gray-800 text-gray-300"
                   >
-                    {isAccessGranted ?
-                      <span className="flex items-center justify-center"><Icon name="fire" className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2" /> SECRET ACCESS</span>
-                      : "READ INSIGHTS"}
+                    READ INSIGHTS
                   </button>
                 </div>
 
-                <div id="secret-content" className="mt-4 sm:mt-6 lg:mt-8">
-                  {isAccessGranted && (
-                    <div className="p-3 sm:p-4 bg-green-900/20 text-green-400 font-mono rounded-lg border border-green-700/50 transition-opacity duration-1000 neon-border shadow-green-900/50 text-sm sm:text-base">
-                      **LEVEL 1 ACCESS:** Congrats, Operator! Direct path unlocked.
-                    </div>
-                  )}
+                <div className="mt-6 sm:mt-8 text-center">
+                  <p className="text-gray-400 text-sm sm:text-base">
+                    Trusted by security professionals worldwide
+                  </p>
                 </div>
               </div>
             </div>
@@ -1443,9 +1487,143 @@ const WolfGuider = () => {
             </div>
           </div>
         </section>
+{/* Premium Pricing Section */}
+<section id="pricing" className="py-16 sm:py-20 lg:py-24 xl:py-28 bg-[#030005] border-t-2 sm:border-t-4 border-red-900/40">
+  <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
+    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-center mb-4 uppercase tracking-widest text-gray-200 neon-glow-text">
+      ELITE <span className="text-red-500">INVESTMENT</span>
+    </h3>
+    
+    <p className="text-center text-gray-400 text-lg mb-12 max-w-2xl mx-auto font-mono">
+      Premium tools that deliver professional results. One-time payment, lifetime access.
+    </p>
 
+    {/* Main Premium Card */}
+    <div className="bg-[#0c0018] rounded-2xl border-2 border-red-600 shadow-2xl shadow-red-900/30 overflow-hidden transform hover:scale-[1.02] transition-all duration-500">
+      {/* Premium Badge */}
+      <div className="bg-gradient-to-r from-red-600 to-red-800 py-3 text-center">
+        <span className="text-white font-bold text-lg tracking-widest font-mono">🔥 PREMIUM BUNDLE - LIMITED OFFER 🔥</span>
+      </div>
+
+      <div className="p-8 sm:p-12">
+        <div className="text-center mb-8">
+          <h4 className="text-2xl sm:text-3xl font-bold text-red-400 mb-4 font-mono uppercase tracking-wider">
+            COMPLETE CYBERSECURITY SUITE
+          </h4>
+          
+          {/* Price Display */}
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <span className="text-5xl sm:text-6xl font-bold text-white">$50</span>
+            <div className="text-left">
+              <div className="text-green-400 text-sm font-mono">✓ ONE-TIME PAYMENT</div>
+              <div className="text-gray-400 text-xs">No recurring fees</div>
+            </div>
+          </div>
+
+          <p className="text-gray-300 text-lg mb-6 max-w-md mx-auto">
+            Get <span className="text-red-400 font-bold">ALL 6 premium tools</span> for less than the price of one traditional enterprise license
+          </p>
+        </div>
+
+        {/* Value Proposition */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="space-y-4">
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="shield" className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
+              <span className="text-gray-300">Enterprise-grade security tools</span>
+            </div>
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="server" className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
+              <span className="text-gray-300">Professional penetration testing suite</span>
+            </div>
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="code" className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
+              <span className="text-gray-300">Advanced vulnerability scanning</span>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="brain" className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
+              <span className="text-gray-300">AI-powered exploit generation</span>
+            </div>
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="globe" className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
+              <span className="text-gray-300">Complete OSINT intelligence suite</span>
+            </div>
+            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+              <Icon name="bug" className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
+              <span className="text-gray-300">Stealth payload builder & deployment</span>
+            </div>
+          </div>
+        </div>
+
+        {/* What You Get */}
+        <div className="bg-black/40 rounded-xl p-6 mb-8 border border-red-900/30">
+          <h5 className="text-red-400 font-bold text-lg mb-4 text-center font-mono">🎯 WHAT YOU GET</h5>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+              <span className="text-gray-300">All 6 Premium Tools</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+              <span className="text-gray-300">Lifetime Updates</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+              <span className="text-gray-300">Priority Support</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+              <span className="text-gray-300">Private Community Access</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+              <span className="text-gray-300">Advanced Training Materials</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+              <span className="text-gray-300">Regular Security Updates</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Comparison */}
+        <div className="bg-gradient-to-r from-red-900/20 to-red-800/20 rounded-xl p-6 mb-8 border border-red-700/30">
+          <h5 className="text-red-300 font-bold mb-3 text-center font-mono">💡 WHY THIS IS A STEAL</h5>
+          <div className="text-center text-gray-300 text-sm">
+            Traditional enterprise security tools cost <span className="line-through text-gray-500">$1000+ per year</span>. 
+            You're getting professional-grade capabilities for a <span className="text-green-400 font-bold">fraction of the cost</span>.
+          </div>
+        </div>
+
+        {/* CTA Button */}
+        <div className="text-center">
+          <button 
+            onClick={handleAccessClick}
+            className="px-12 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-red-900/50 border-2 border-red-500 font-mono w-full max-w-md mx-auto"
+          >
+            🚀 GET FULL ACCESS NOW - $50
+          </button>
+          
+          <p className="text-gray-400 text-sm mt-4 font-mono">
+            ⚡ Instant delivery • 🔒 One-time payment • 💰 30-day money-back guarantee
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Bottom Note */}
+    <div className="text-center mt-8">
+      <p className="text-gray-500 text-sm font-mono">
+        "Tools that professionals trust. Price that everyone can afford."
+      </p>
+    </div>
+  </div>
+</section>
         {/* Blog/Insights Section */}
-        <section id="blog" className="py-16 sm:py-20 lg:py-24 xl:py-28 bg-[#030005] border-t-2 sm:border-t-4 border-red-900/40">
+        <section id="blog" className="py-16 sm:py-20 lg:py-24 xl:py-28 bg-[#0c0018] border-t-2 sm:border-t-4 border-red-900/40">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
             <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-center mb-12 sm:mb-16 lg:mb-20 uppercase tracking-widest text-gray-200 neon-glow-text">
               LATEST <span className="text-red-500">INSIGHTS</span>
@@ -1482,6 +1660,12 @@ const WolfGuider = () => {
         tool={activeTool}
         onClose={() => setActiveTool(null)}
         telegramUrl={TELEGRAM_URL}
+      />
+
+      {/* Struggle Popup Modal */}
+      <StrugglePopup
+        isVisible={showStrugglePopup}
+        onClose={() => setShowStrugglePopup(false)}
       />
 
       {/* Footer */}

@@ -334,7 +334,7 @@ const COMM_LOG_ENTRIES = [
   { type: 'SUCCESS', message: 'Access Code high score set by Operator 4A9C (3.12s).' },
 ];
 
-const TELEGRAM_BOT_USERNAME = 'shadowwolf_bot';
+const TELEGRAM_BOT_USERNAME = '@wolfguider_bot';
 const TELEGRAM_URL = `https://t.me/${TELEGRAM_BOT_USERNAME}`;
 
 // Icon component with Lucide icons

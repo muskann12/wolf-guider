@@ -692,8 +692,6 @@ const StrugglePopup = ({ isVisible, onClose }: { isVisible: boolean, onClose: ()
     </div>
   );
 };
-
-// Tool Execution Modal - Enhanced with realistic execution steps
 const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose: () => void, telegramUrl: string }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -720,90 +718,125 @@ const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose
     setExecutionComplete(false);
   };
 
+  // Tool preview images mapping
+  const toolImages = {
+    'osint-suite': '/images/1.jpeg',
+    'phishing-toolkit': '/images/2.jpeg', 
+    'payload-builder': '/images/3.jpeg',
+    'bug-bounty-suite': '/images/4.jpeg',
+    'ai-exploit-assistant': '/images/5.jpeg',
+    'anonymous-suite': '/images/6.jpeg'
+  };
+
   if (!tool) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 backdrop-blur-md bg-black/90">
-      <div className="w-full max-w-sm sm:max-w-md md:max-w-xl bg-[#0c0018] border-2 sm:border-4 border-red-700 shadow-[0_0_30px_rgba(239,68,68,0.7)] rounded-lg sm:rounded-xl overflow-hidden transform transition-all duration-500 neon-border mx-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/70">
+      {/* Wider Card with Reduced Height */}
+      <div className="w-full max-w-2xl bg-[#0c0018] border-2 border-red-600 shadow-[0_0_20px_rgba(239,68,68,0.5)] rounded-lg overflow-hidden transform scale-95 hover:scale-100 transition-transform duration-300">
         
         {/* Modal Header */}
-        <div className="flex justify-between items-center p-3 sm:p-4 bg-red-900/40 border-b border-red-700">
-          <h5 className="text-lg sm:text-xl font-mono text-red-300 font-bold uppercase tracking-wider flex items-center">
-            <Icon name="terminal" className="w-5 h-5 sm:w-6 sm:h-6 mr-2"/> {tool.name}
+        <div className="flex justify-between items-center p-4 bg-red-900/30 border-b border-red-600">
+          <h5 className="text-lg font-mono text-red-300 font-bold uppercase tracking-tight flex items-center">
+            <Icon name="terminal" className="w-5 h-5 mr-2"/> 
+            <span className="truncate">{tool.name}</span>
           </h5>
-          <button onClick={onClose} className="text-red-300 hover:text-white transition-colors p-1 rounded-md hover:bg-red-800/50" aria-label="Close demo">
-            <Icon name="close" className="w-4 h-4 sm:w-5 sm:h-5" />
+          <button onClick={onClose} className="text-red-300 hover:text-white transition-colors p-1 rounded" aria-label="Close demo">
+            <Icon name="close" className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Modal Content */}
-        <div className="p-4 sm:p-6 font-mono">
-          {/* Execution Steps */}
-          <div className="mb-4 sm:mb-6">
-            <div className="text-red-400 font-bold mb-3 text-sm sm:text-base">EXECUTION PROGRESS:</div>
-            <div className="space-y-2 bg-black/50 p-3 rounded border border-gray-700 max-h-40 overflow-y-auto">
-              {tool.execution_steps.map((step: string, index: number) => (
-                <div 
-                  key={index}
-                  className={`text-xs sm:text-sm transition-all duration-500 ${
-                    index < currentStep 
-                      ? 'text-green-400' 
-                      : index === currentStep && isExecuting
-                      ? 'text-yellow-400 animate-pulse'
-                      : 'text-gray-600'
-                  }`}
-                >
-                  {index < currentStep ? '✓' : index === currentStep && isExecuting ? '⟳' : '○'} {step}
-                </div>
-              ))}
+        {/* Modal Content - Grid Layout */}
+        <div className="p-4 font-mono grid grid-cols-2 gap-4">
+          {/* Left Column - Image */}
+          <div className="col-span-1">
+            <div className="text-red-400 font-bold mb-2 text-sm">PREVIEW:</div>
+            <div className="bg-black/50 p-2 rounded border border-gray-600">
+              <div className="w-full h-48 overflow-hidden rounded border border-gray-500">
+                <img 
+                  src={toolImages[tool.id as keyof typeof toolImages] || '/images/tools/default-preview.jpg'} 
+                  alt={`${tool.name} Preview`}
+                  className="w-full h-full object-cover"
+                  onError={({ currentTarget }) => {
+                    currentTarget.onerror = null;
+                    currentTarget.src = '/images/tools/default-preview.jpg';
+                  }}
+                />
+              </div>
             </div>
           </div>
 
-          {/* System Information */}
-          <div className="space-y-3 sm:space-y-4 text-sm mb-4 sm:mb-6">
-            <div className="p-2 sm:p-3 bg-gray-900 rounded border border-gray-700">
-              <span className="text-gray-500">TARGET IP: </span>
-              <span className="text-green-400 font-bold">{tool.ip}</span>
+          {/* Right Column - Content */}
+          <div className="col-span-1 space-y-4">
+            {/* Execution Steps */}
+            <div>
+              <div className="text-red-400 font-bold mb-2 text-sm">EXECUTION:</div>
+              <div className="space-y-1.5 bg-black/50 p-3 rounded border border-gray-600 max-h-32 overflow-y-auto text-sm">
+                {tool.execution_steps.map((step: string, index: number) => (
+                  <div 
+                    key={index}
+                    className={`transition-all duration-500 truncate ${
+                      index < currentStep 
+                        ? 'text-green-400' 
+                        : index === currentStep && isExecuting
+                        ? 'text-yellow-400 animate-pulse'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    {index < currentStep ? '✓' : index === currentStep && isExecuting ? '⟳' : '○'} {step}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="p-2 sm:p-3 bg-gray-900 rounded border border-gray-700">
-              <span className="text-gray-500">SCAN STATUS: </span>
-              <span className={tool.port_scan ? "text-yellow-400 font-bold" : "text-gray-400"}>
-                {tool.port_scan ? `Active Port Scanning initiated` : 'Static Protocol Deployment'}
-              </span>
-            </div>
+            {/* System Information */}
+            <div className="space-y-2 text-sm">
+              <div className="p-2 bg-gray-900 rounded border border-gray-600 truncate">
+                <span className="text-gray-500">IP: </span>
+                <span className="text-green-400 font-bold">{tool.ip}</span>
+              </div>
 
-            <div className="p-2 sm:p-3 bg-gray-900 rounded border border-gray-700">
-              <span className="text-gray-500">COMMAND: </span>
-              <span className="text-green-400">$ {tool.command}</span>
+              <div className="p-2 bg-gray-900 rounded border border-gray-600">
+                <span className="text-gray-500">STATUS: </span>
+                <span className={tool.port_scan ? "text-yellow-400" : "text-gray-400"}>
+                  {tool.port_scan ? 'Port Scan' : 'Static'}
+                </span>
+              </div>
+
+              <div className="p-2 bg-gray-900 rounded border border-gray-600 truncate">
+                <span className="text-gray-500">CMD: </span>
+                <span className="text-green-400">$ {tool.command}</span>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Status Message */}
+        {/* Status Message */}
+        <div className="px-4 pb-4">
           {executionComplete ? (
-            <div className="p-3 bg-green-900/30 border border-green-700 rounded text-green-400 text-center">
-              ✓ Tool execution completed successfully! Ready for full deployment.
+            <div className="p-3 bg-green-900/20 border border-green-600 rounded text-green-400 text-center text-sm">
+              ✓ Execution Complete!
             </div>
           ) : isExecuting ? (
-            <div className="p-3 bg-yellow-900/30 border border-yellow-700 rounded text-yellow-400 text-center animate-pulse">
-              ⟳ Tool execution in progress... Please wait.
+            <div className="p-3 bg-yellow-900/20 border border-yellow-600 rounded text-yellow-400 text-center text-sm animate-pulse">
+              ⟳ In Progress...
             </div>
           ) : (
-            <div className="p-3 bg-blue-900/30 border border-blue-700 rounded text-blue-400 text-center">
-              ⚡ Tool configured and ready for execution.
+            <div className="p-3 bg-blue-900/20 border border-blue-600 rounded text-blue-400 text-center text-sm">
+              ⚡ Ready
             </div>
           )}
         </div>
 
         {/* Modal Footer/CTA */}
-        <div className="p-3 sm:p-4 bg-red-900/40 border-t border-red-700 flex flex-col sm:flex-row gap-2 justify-between items-center">
+        <div className="p-4 bg-red-900/30 border-t border-red-600 flex gap-3">
           {!isExecuting && !executionComplete && (
             <button
               onClick={startExecution}
-              className="px-4 py-2 text-sm sm:text-base font-bold rounded-lg bg-green-600 hover:bg-green-500 transition-all shadow-lg shadow-green-900/50 flex items-center justify-center w-full sm:w-auto"
+              className="flex-1 px-4 py-3 text-sm font-bold rounded bg-green-600 hover:bg-green-500 transition-all shadow shadow-green-900/30 flex items-center justify-center"
             >
               <Icon name="play" className="w-4 h-4 mr-2" />
-              START EXECUTION
+              START DEMO
             </button>
           )}
           
@@ -812,9 +845,9 @@ const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
-            className="px-4 py-2 text-sm sm:text-base font-bold rounded-lg bg-red-600 hover:bg-red-500 transition-all shadow-lg shadow-red-900/50 flex items-center justify-center w-full sm:w-auto"
+            className="flex-1 px-4 py-3 text-sm font-bold rounded bg-red-600 hover:bg-red-500 transition-all shadow shadow-red-900/30 flex items-center justify-center"
           >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
               <path d="M21 8.25c0-.98-.67-1.81-1.63-1.98l-15.3-2.61c-1.12-.19-2.12.78-2.12 1.91v4.44c0 .87.57 1.63 1.39 1.88l1.41.43c.2.06.32.26.32.48v5.82c0 .91.95 1.54 1.81 1.25l2.45-.82c.42-.14.88-.06 1.25.21l1.72 1.21c.2.14.4.21.61.21.23 0 .44-.08.62-.25l7.19-7.25c.66-.67.66-1.76 0-2.43l-3.52-3.56c-.66-.67-1.74-.67-2.4 0l-1.34 1.35c-.13.13-.2.3-.2.48v2.96c0 .28-.23.51-.51.51h-2.17c-.28 0-.51-.23-.51-.51v-4.44c0-.26-.13-.51-.35-.65l-1.42-.88c-.28-.18-.62-.27-.96-.27h-2.1c-.28 0-.51-.23-.51-.51v-2.1c0-.28.23-.51.51-.51h2.1c.34 0 .68.09.96.27l1.42.88c.22.14.35.39.35.65v2.96c0 .28.23.51.51.51h2.17c.28 0 .51.23.51.51v-.44c0-.98.67-1.81 1.63-1.98l7.19-1.23c.95-.16 1.81.56 1.81 1.53z" />
             </svg>
             GET FULL ACCESS
@@ -824,7 +857,6 @@ const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose
     </div>
   );
 };
-
 // Live Audit Feed Modal
 const LiveAuditFeedModal = ({ isVisible, onClose }: { isVisible: boolean, onClose: () => void }) => {
   if (!isVisible) return null;

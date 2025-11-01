@@ -615,77 +615,78 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
     </div>
   );
 };
-
-// Struggle Popup Component
+// Professional Struggle Popup Component
 const StrugglePopup = ({ isVisible, onClose }: { isVisible: boolean, onClose: () => void }) => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/90">
-      <div className="w-full max-w-md bg-[#0c0018] border-4 border-red-700 rounded-xl overflow-hidden transform transition-all duration-500 neon-border shadow-[0_0_30px_rgba(239,68,68,0.7)]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-sm bg-gradient-to-br from-gray-900 to-[#0c0018] border border-gray-700 rounded-2xl overflow-hidden shadow-2xl shadow-red-900/20">
         
-        {/* Popup Header */}
-        <div className="flex justify-between items-center p-4 bg-red-900/40 border-b border-red-700">
-          <h3 className="text-xl font-mono text-red-300 font-bold flex items-center">
-            <Icon name="alert" className="w-6 h-6 mr-2" />
-            ATTENTION OPERATOR
-          </h3>
-          <button onClick={onClose} className="text-red-300 hover:text-white transition-colors">
-            <Icon name="close" className="w-5 h-5" />
+        {/* Popup Header - More Compact */}
+        <div className="flex justify-between items-center p-3 bg-gradient-to-r from-red-900/20 to-purple-900/20 border-b border-gray-600">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <h3 className="text-sm font-semibold text-gray-200 tracking-wide">
+              ATTENTION
+            </h3>
+          </div>
+          <button 
+            onClick={onClose}
+            className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded hover:bg-gray-700"
+          >
+            ×
           </button>
         </div>
 
-        {/* Popup Content */}
-        <div className="p-6 font-mono">
-          <div className="text-center mb-6">
-            <Icon name="help" className="w-16 h-16 text-red-500 mx-auto mb-4 animate-pulse" />
-            <h4 className="text-2xl font-bold text-white mb-2">STRUGGLING WITH BUG BOUNTY?</h4>
-            <p className="text-gray-300 text-lg">
-              Are you facing issues with:
+        {/* Popup Content - More Compact */}
+        <div className="p-4">
+          <div className="text-center mb-4">
+            <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center bg-red-500/10 rounded-full">
+              <span className="text-lg">⚠️</span>
+            </div>
+            <h4 className="text-lg font-bold text-white mb-2">Need Help?</h4>
+            <p className="text-gray-400 text-sm">
+              Struggling with bug bounty challenges?
             </p>
           </div>
 
-          <div className="space-y-3 mb-6">
-            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
-              <Icon name="bug" className="w-5 h-5 text-red-500 mr-3" />
-              <span className="text-gray-300">Finding vulnerabilities in web applications?</span>
+          <div className="space-y-2 mb-4">
+            <div className="flex items-start p-2 bg-gray-800/30 rounded-lg">
+              <span className="text-red-400 text-xs mr-2">•</span>
+              <span className="text-gray-300 text-sm">Finding vulnerabilities</span>
             </div>
-            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
-              <Icon name="shield" className="w-5 h-5 text-red-500 mr-3" />
-              <span className="text-gray-300">Bypassing security protections?</span>
+            <div className="flex items-start p-2 bg-gray-800/30 rounded-lg">
+              <span className="text-red-400 text-xs mr-2">•</span>
+              <span className="text-gray-300 text-sm">Bypassing protections</span>
             </div>
-            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
-              <Icon name="code" className="w-5 h-5 text-red-500 mr-3" />
-              <span className="text-gray-300">Writing effective exploits?</span>
-            </div>
-            <div className="flex items-center p-3 bg-gray-900/50 rounded-lg border border-gray-700">
-              <Icon name="globe" className="w-5 h-5 text-red-500 mr-3" />
-              <span className="text-gray-300">Understanding target infrastructure?</span>
+            <div className="flex items-start p-2 bg-gray-800/30 rounded-lg">
+              <span className="text-red-400 text-xs mr-2">•</span>
+              <span className="text-gray-300 text-sm">Writing exploits</span>
             </div>
           </div>
 
-          <p className="text-red-400 text-center text-sm mb-6">
-            Our advanced tools and expert guidance can help you overcome these challenges!
+          <p className="text-red-400 text-center text-xs mb-4">
+            Expert guidance available
           </p>
         </div>
 
-        {/* Popup Footer */}
-        <div className="p-4 bg-red-900/40 border-t border-red-700 flex flex-col sm:flex-row gap-3">
+        {/* Popup Footer - More Compact */}
+        <div className="p-3 bg-gray-800/20 border-t border-gray-700 flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors font-mono"
+            className="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors"
           >
-            I'M FINE, CONTINUE
+            Continue
           </button>
           <a
             href={TELEGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
-            className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors font-mono text-center flex items-center justify-center"
+            className="flex-1 px-3 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-sm font-medium rounded-lg transition-all text-center"
           >
-            <Icon name="terminal" className="w-5 h-5 mr-2" />
-            GET HELP NOW
+            Get Help
           </a>
         </div>
       </div>

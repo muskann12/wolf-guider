@@ -413,18 +413,26 @@ const Icon = ({ name, className = 'w-6 h-6' }: { name: string, className?: strin
 
 // Professional Logo Component
 const WolfLogo = ({ className = "w-40 h-32" }) => (
-  <div className={`flex items-center justify-center ${className}`}>
+  <div className={`flex flex-col items-center justify-center ${className}`}>
+    {/* Logo Image */}
+    <div className="flex-1 flex items-center justify-center mb-2">
+      <img 
+        src="/logo.png" 
+        alt="WolfGuider Logo" 
+        className="h-20 w-auto object-contain"
+      />
+    </div>
+    
+    {/* Text with effects */}
     <div className="text-center">
-      <div className="text-4xl font-bold text-red-500 tracking-widest font-mono">
-        WG
-      </div>
-      <div className="text-xs text-gray-400 font-mono mt-1 tracking-widest">
+      <div className="text-xs text-gray-600 font-mono tracking-widest uppercase 
+                     transition-all duration-300 hover:text-red-500 
+                     transform hover:scale-105">
         WOLFGUIDER
       </div>
     </div>
   </div>
 );
-
 // Blog Card Component
 const BlogCard = ({ post, onClick }: { post: any, onClick: () => void }) => {
   return (

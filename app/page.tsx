@@ -379,6 +379,7 @@ const COMM_LOG_ENTRIES = [
 
 const TELEGRAM_BOT_USERNAME = 'wolfguider_bot';
 const TELEGRAM_URL = `https://t.me/${TELEGRAM_BOT_USERNAME}`;
+const TON_WALLET_ADDRESS = 'UQC...'; // Replace with your actual TON wallet address
 
 // Icon component with Lucide icons
 const Icon = ({ name, className = 'w-6 h-6' }: { name: string, className?: string }) => {
@@ -701,19 +702,32 @@ const StrugglePopup = ({ isVisible, onClose }: { isVisible: boolean, onClose: ()
     </div>
   );
 };
-const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose: () => void, telegramUrl: string }) => {
+const ToolExecutionModal = ({
+  tool,
+  onClose,
+  telegramUrl,
+  tonWalletAddress = "UQDIr-B_CNd96X1RVu1vJ3Y3-qNu_rm9tuWYquxcigmJOPby",
+}: {
+  tool: any;
+  onClose: () => void;
+  telegramUrl: string;
+  tonWalletAddress?: string;
+}) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionComplete, setExecutionComplete] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!tool || !tool.execution_steps) return;
-    
+
     if (isExecuting && currentStep < tool.execution_steps.length) {
       const timer = setTimeout(() => {
-        setCurrentStep(prev => prev + 1);
+        setCurrentStep((prev) => prev + 1);
       }, 1500);
-
       return () => clearTimeout(timer);
     } else if (currentStep >= tool.execution_steps.length && isExecuting) {
       setIsExecuting(false);
@@ -727,143 +741,350 @@ const ToolExecutionModal = ({ tool, onClose, telegramUrl }: { tool: any, onClose
     setExecutionComplete(false);
   };
 
-  // Tool preview images mapping
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(tonWalletAddress);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/send-to-telegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          toolId: tool.id,
+          toolName: tool.name,
+          tonWalletAddress,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to send email");
+
+      setEmailSubmitted(true);
+      console.log("User email submitted:", userEmail);
+
+      setTimeout(() => {
+        setEmailSubmitted(false);
+        setShowPaymentModal(false);
+        setUserEmail("");
+      }, 3000);
+    } catch (err) {
+      console.error("Error submitting email:", err);
+      alert("Failed to send email. Try again.");
+    }
+  };
+
   const toolImages = {
-    'osint-suite': '/images/1.jpeg',
-    'phishing-toolkit': '/images/2.jpeg', 
-    'payload-builder': '/images/3.jpeg',
-    'bug-bounty-suite': '/images/4.jpeg',
-    'ai-exploit-assistant': '/images/5.jpeg',
-    'anonymous-suite': '/images/6.jpeg'
+    "osint-suite": "/images/1.jpeg",
+    "phishing-toolkit": "/images/2.jpeg",
+    "payload-builder": "/images/3.jpeg",
+    "bug-bounty-suite": "/images/4.jpeg",
+    "ai-exploit-assistant": "/images/5.jpeg",
+    "anonymous-suite": "/images/6.jpeg",
   };
 
   if (!tool) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/70">
-      {/* Wider Card with Reduced Height */}
-      <div className="w-full max-w-2xl bg-[#0c0018] border-2 border-red-600 shadow-[0_0_20px_rgba(239,68,68,0.5)] rounded-lg overflow-hidden transform scale-95 hover:scale-100 transition-transform duration-300">
-        
-        {/* Modal Header */}
-        <div className="flex justify-between items-center p-4 bg-red-900/30 border-b border-red-600">
-          <h5 className="text-lg font-mono text-red-300 font-bold uppercase tracking-tight flex items-center">
-            <Icon name="terminal" className="w-5 h-5 mr-2"/> 
-            <span className="truncate">{tool.name}</span>
-          </h5>
-          <button onClick={onClose} className="text-red-300 hover:text-white transition-colors p-1 rounded" aria-label="Close demo">
-            <Icon name="close" className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Modal Content - Grid Layout */}
-        <div className="p-4 font-mono grid grid-cols-2 gap-4">
-          {/* Left Column - Image */}
-          <div className="col-span-1">
-            <div className="text-red-400 font-bold mb-2 text-sm">PREVIEW:</div>
-            <div className="bg-black/50 p-2 rounded border border-gray-600">
-              <div className="w-full h-48 overflow-hidden rounded border border-gray-500">
-                <img 
-                  src={toolImages[tool.id as keyof typeof toolImages] || '/images/tools/default-preview.jpg'} 
-                  alt={`${tool.name} Preview`}
-                  className="w-full h-full object-cover"
-                  onError={({ currentTarget }) => {
-                    currentTarget.onerror = null;
-                    currentTarget.src = '/images/tools/default-preview.jpg';
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Content */}
-          <div className="col-span-1 space-y-4">
-            {/* Execution Steps */}
-            <div>
-              <div className="text-red-400 font-bold mb-2 text-sm">EXECUTION:</div>
-              <div className="space-y-1.5 bg-black/50 p-3 rounded border border-gray-600 max-h-32 overflow-y-auto text-sm">
-                {tool.execution_steps.map((step: string, index: number) => (
-                  <div 
-                    key={index}
-                    className={`transition-all duration-500 truncate ${
-                      index < currentStep 
-                        ? 'text-green-400' 
-                        : index === currentStep && isExecuting
-                        ? 'text-yellow-400 animate-pulse'
-                        : 'text-gray-500'
-                    }`}
-                  >
-                    {index < currentStep ? '✓' : index === currentStep && isExecuting ? '⟳' : '○'} {step}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* System Information */}
-            <div className="space-y-2 text-sm">
-              <div className="p-2 bg-gray-900 rounded border border-gray-600 truncate">
-                <span className="text-gray-500">IP: </span>
-                <span className="text-green-400 font-bold">{tool.ip}</span>
-              </div>
-
-              <div className="p-2 bg-gray-900 rounded border border-gray-600">
-                <span className="text-gray-500">STATUS: </span>
-                <span className={tool.port_scan ? "text-yellow-400" : "text-gray-400"}>
-                  {tool.port_scan ? 'Port Scan' : 'Static'}
-                </span>
-              </div>
-
-              <div className="p-2 bg-gray-900 rounded border border-gray-600 truncate">
-                <span className="text-gray-500">CMD: </span>
-                <span className="text-green-400">$ {tool.command}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Status Message */}
-        <div className="px-4 pb-4">
-          {executionComplete ? (
-            <div className="p-3 bg-green-900/20 border border-green-600 rounded text-green-400 text-center text-sm">
-              ✓ Execution Complete!
-            </div>
-          ) : isExecuting ? (
-            <div className="p-3 bg-yellow-900/20 border border-yellow-600 rounded text-yellow-400 text-center text-sm animate-pulse">
-              ⟳ In Progress...
-            </div>
-          ) : (
-            <div className="p-3 bg-blue-900/20 border border-blue-600 rounded text-blue-400 text-center text-sm">
-              ⚡ Ready
-            </div>
-          )}
-        </div>
-
-        {/* Modal Footer/CTA */}
-        <div className="p-4 bg-red-900/30 border-t border-red-600 flex gap-3">
-          {!isExecuting && !executionComplete && (
+    <>
+      {/* Main Tool Execution Modal */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/70">
+        <div className="w-full max-w-2xl bg-[#0c0018] border-2 border-red-600 shadow-[0_0_20px_rgba(239,68,68,0.5)] rounded-lg overflow-hidden transform scale-95 hover:scale-100 transition-transform duration-300">
+          {/* Header */}
+          <div className="flex justify-between items-center p-4 bg-red-900/30 border-b border-red-600">
+            <h5 className="text-lg font-mono text-red-300 font-bold uppercase tracking-tight flex items-center">
+              <Icon name="terminal" className="w-5 h-5 mr-2" />
+              <span className="truncate">{tool.name}</span>
+            </h5>
             <button
-              onClick={startExecution}
-              className="flex-1 px-4 py-3 text-sm font-bold rounded bg-green-600 hover:bg-green-500 transition-all shadow shadow-green-900/30 flex items-center justify-center"
+              onClick={onClose}
+              className="text-red-300 hover:text-white transition-colors p-1 rounded"
+              aria-label="Close demo"
             >
-              <Icon name="play" className="w-4 h-4 mr-2" />
-              START DEMO
+              <Icon name="close" className="w-5 h-5" />
             </button>
-          )}
-          
-          <a
-            href={telegramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={onClose}
-            className="flex-1 px-4 py-3 text-sm font-bold rounded bg-red-600 hover:bg-red-500 transition-all shadow shadow-red-900/30 flex items-center justify-center"
-          >
-            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M21 8.25c0-.98-.67-1.81-1.63-1.98l-15.3-2.61c-1.12-.19-2.12.78-2.12 1.91v4.44c0 .87.57 1.63 1.39 1.88l1.41.43c.2.06.32.26.32.48v5.82c0 .91.95 1.54 1.81 1.25l2.45-.82c.42-.14.88-.06 1.25.21l1.72 1.21c.2.14.4.21.61.21.23 0 .44-.08.62-.25l7.19-7.25c.66-.67.66-1.76 0-2.43l-3.52-3.56c-.66-.67-1.74-.67-2.4 0l-1.34 1.35c-.13.13-.2.3-.2.48v2.96c0 .28-.23.51-.51.51h-2.17c-.28 0-.51-.23-.51-.51v-4.44c0-.26-.13-.51-.35-.65l-1.42-.88c-.28-.18-.62-.27-.96-.27h-2.1c-.28 0-.51-.23-.51-.51v-2.1c0-.28.23-.51.51-.51h2.1c.34 0 .68.09.96.27l1.42.88c.22.14.35.39.35.65v2.96c0 .28.23.51.51.51h2.17c.28 0 .51.23.51.51v-.44c0-.98.67-1.81 1.63-1.98l7.19-1.23c.95-.16 1.81.56 1.81 1.53z" />
-            </svg>
-            GET FULL ACCESS
-          </a>
+          </div>
+
+          {/* Content */}
+          <div className="p-4 font-mono grid grid-cols-2 gap-4">
+            {/* Left: Image */}
+            <div>
+              <div className="text-red-400 font-bold mb-2 text-sm">PREVIEW:</div>
+              <div className="bg-black/50 p-2 rounded border border-gray-600">
+                <div className="w-full h-48 overflow-hidden rounded border border-gray-500">
+                  <img
+                    src={
+                      toolImages[tool.id as keyof typeof toolImages] ||
+                      "/images/tools/default-preview.jpg"
+                    }
+                    alt={`${tool.name} Preview`}
+                    className="w-full h-full object-cover"
+                    onError={({ currentTarget }) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src = "/images/tools/default-preview.jpg";
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Steps & Info */}
+            <div className="space-y-4">
+              {/* Steps */}
+              <div>
+                <div className="text-red-400 font-bold mb-2 text-sm">
+                  EXECUTION:
+                </div>
+                <div className="space-y-1.5 bg-black/50 p-3 rounded border border-gray-600 max-h-32 overflow-y-auto text-sm">
+                  {tool.execution_steps.map((step: string, index: number) => (
+                    <div
+                      key={index}
+                      className={`transition-all duration-500 truncate ${
+                        index < currentStep
+                          ? "text-green-400"
+                          : index === currentStep && isExecuting
+                          ? "text-yellow-400 animate-pulse"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {index < currentStep
+                        ? "✓"
+                        : index === currentStep && isExecuting
+                        ? "⟳"
+                        : "○"}{" "}
+                      {step}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="space-y-2 text-sm">
+                <div className="p-2 bg-gray-900 rounded border border-gray-600 truncate">
+                  <span className="text-gray-500">IP: </span>
+                  <span className="text-green-400 font-bold">{tool.ip}</span>
+                </div>
+                <div className="p-2 bg-gray-900 rounded border border-gray-600">
+                  <span className="text-gray-500">STATUS: </span>
+                  <span
+                    className={
+                      tool.port_scan ? "text-yellow-400" : "text-gray-400"
+                    }
+                  >
+                    {tool.port_scan ? "Port Scan" : "Static"}
+                  </span>
+                </div>
+                <div className="p-2 bg-gray-900 rounded border border-gray-600 truncate">
+                  <span className="text-gray-500">CMD: </span>
+                  <span className="text-green-400">$ {tool.command}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className="px-4 pb-4">
+            {executionComplete ? (
+              <div className="p-3 bg-green-900/20 border border-green-600 rounded text-green-400 text-center text-sm">
+                ✓ Execution Complete!
+              </div>
+            ) : isExecuting ? (
+              <div className="p-3 bg-yellow-900/20 border border-yellow-600 rounded text-yellow-400 text-center text-sm animate-pulse">
+                ⟳ In Progress...
+              </div>
+            ) : (
+              <div className="p-3 bg-blue-900/20 border border-blue-600 rounded text-blue-400 text-center text-sm">
+                ⚡ Ready
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="p-4 bg-red-900/30 border-t border-red-600 flex flex-col gap-3">
+            {!isExecuting && !executionComplete && (
+              <button
+                onClick={startExecution}
+                className="px-4 py-3 text-sm font-bold rounded bg-green-600 hover:bg-green-500 transition-all shadow shadow-green-900/30 flex items-center justify-center"
+              >
+                <Icon name="play" className="w-4 h-4 mr-2" />
+                START DEMO
+              </button>
+            )}
+
+            {/* Access Options */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* Telegram - Direct Access */}
+              <a
+                href={telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onClose}
+                className="px-4 py-3 text-sm font-bold rounded bg-blue-600 hover:bg-blue-500 transition-all shadow shadow-blue-900/30 flex items-center justify-center"
+              >
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.78 5.42-.9 6.8-.06.67-.36.89-.89.56-2.45-1.83-3.57-2.98-5.79-4.78-.51-.36-.87-.55-.83-1.08.05-.63.72-.63 1.14-.46 1.69.68 3.64 1.56 5.21 2.3.51.2.92.1 1.06-.34.33-1.03 1.03-3.64 1.36-4.85.2-.72.04-1.04-.44-1.09-.18-.02-.39-.02-.6-.02z" />
+                </svg>
+                TELEGRAM ACCESS
+              </a>
+
+              {/* TON Wallet - Professional Access */}
+              <button
+                onClick={() => setShowPaymentModal(true)}
+                className="px-4 py-3 text-sm font-bold rounded bg-purple-600 hover:bg-purple-500 transition-all shadow shadow-purple-900/30 flex items-center justify-center"
+              >
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+                </svg>
+                PRO ACCESS (TON)
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Professional TON Wallet Access Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-black/80">
+          <div className="w-full max-w-md bg-[#0c0018] border-2 border-purple-600 shadow-[0_0_20px_rgba(147,51,234,0.5)] rounded-lg overflow-hidden">
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 bg-purple-900/30 border-b border-purple-600">
+              <h5 className="text-lg font-mono text-purple-300 font-bold uppercase tracking-tight flex items-center">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+                </svg>
+                PROFESSIONAL ACCESS
+              </h5>
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="text-purple-300 hover:text-white transition-colors p-1 rounded"
+                aria-label="Close payment"
+              >
+                <Icon name="close" className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 font-mono">
+              {!emailSubmitted ? (
+                <>
+                  <div className="text-purple-400 font-bold mb-3 text-sm text-center">
+                    GET PROFESSIONAL ACCESS TO {tool.name.toUpperCase()}
+                  </div>
+                  
+                  <div className="bg-black/50 p-3 rounded border border-gray-600 mb-4">
+                    <div className="text-yellow-400 text-sm mb-2 font-bold">
+                      🚀 Professional Features:
+                    </div>
+                    <ul className="text-xs text-gray-300 space-y-1 list-disc list-inside">
+                      <li>Full tool access without Telegram</li>
+                      <li>Priority support & updates</li>
+                      <li>Advanced features unlocked</li>
+                      <li>Direct download access</li>
+                      <li>Lifetime updates</li>
+                    </ul>
+                  </div>
+
+                  <div className="mb-4">
+                    <div className="text-gray-400 text-xs mb-1 flex justify-between">
+                      <span>TON WALLET ADDRESS:</span>
+                      <button
+                        onClick={copyToClipboard}
+                        className="text-purple-400 hover:text-purple-300 text-xs"
+                      >
+                        {copied ? "Copied!" : "Copy"}
+                      </button>
+                    </div>
+                    <div className="bg-black p-3 rounded border border-purple-600 text-green-400 text-sm font-mono break-all">
+                      {tonWalletAddress}
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-900/20 border border-yellow-600 rounded p-3 mb-4">
+                    <div className="text-yellow-400 text-xs font-bold mb-1">
+                      💡 Payment Instructions:
+                    </div>
+                    <ol className="text-xs text-yellow-300 space-y-1 list-decimal list-inside">
+                      <li>Send payment to the TON wallet address above</li>
+                      <li>Enter your email below</li>
+                      <li>We'll email you direct access within 24 hours</li>
+                      <li>No Telegram required!</li>
+                    </ol>
+                  </div>
+
+                  <form onSubmit={handleEmailSubmit} className="space-y-3">
+                    <div>
+                      <label className="text-gray-400 text-xs mb-1 block">
+                        YOUR EMAIL FOR ACCESS:
+                      </label>
+                      <input
+                        type="email"
+                        value={userEmail}
+                        onChange={(e) => setUserEmail(e.target.value)}
+                        placeholder="Enter your email for direct access"
+                        className="w-full px-3 py-2 bg-gray-900 text-white text-sm rounded border border-gray-600 focus:border-purple-500 focus:outline-none"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="flex gap-2 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowPaymentModal(false)}
+                        className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white text-sm font-bold rounded transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-bold rounded transition-colors"
+                      >
+                        Confirm Payment
+                      </button>
+                    </div>
+                  </form>
+                </>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="text-green-400 text-4xl mb-3">✓</div>
+                  <div className="text-green-400 font-bold mb-2 text-lg">
+                    Payment Received!
+                  </div>
+                  <div className="text-gray-300 text-sm mb-4">
+                    We've received your payment details. You'll get direct access to 
+                    <span className="text-purple-400 font-bold"> {tool.name}</span> 
+                    via email within 24 hours.
+                  </div>
+                  <div className="text-yellow-400 text-xs bg-yellow-900/20 p-2 rounded border border-yellow-600">
+                    ✅ No Telegram required - Check your email soon!
+                  </div>
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 // Live Audit Feed Modal
@@ -1415,33 +1636,68 @@ const WolfGuider = () => {
       `}</style>
 
       {/* Navigation Bar */}
-      <nav className="sticky top-0 left-0 right-0 h-14 sm:h-16 bg-[#030005]/95 backdrop-blur-md border-b border-red-900/50 z-40 shadow-xl shadow-black/80">
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-full px-3 sm:px-4 lg:px-8">
-          <h1 className="text-xl sm:text-2xl font-extrabold text-red-500 font-mono tracking-widest neon-glow-text">WOLFGUIDER</h1>
-          <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-6 text-sm font-semibold text-gray-400 font-mono">
-            <a href="#tools" className="hover:text-red-500 transition-colors duration-300 hidden sm:block">TOOLS</a>
-            <button 
-              onClick={() => setCurrentView('blog')}
-              className="hover:text-red-500 transition-colors duration-300 hidden sm:block"
-            >
-              INSIGHTS
-            </button>
-            <a href="#pricing" className="hover:text-red-500 transition-colors duration-300 hidden sm:block">PRICING</a>
-            <button 
-              onClick={handleAccessClick}
-              className="px-3 py-1 sm:px-4 sm:py-2 lg:px-5 lg:py-2 text-xs sm:text-sm lg:text-base font-bold rounded-lg bg-red-700 hover:bg-red-600 transition-all shadow-lg shadow-red-900/50 neon-border"
-            >
-              GET ACCESS
-            </button>
-            <button 
-              onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden text-gray-400 hover:text-red-500 transition-colors duration-300 p-1"
-            >
-              <Icon name="menu" className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-      </nav>
+      <nav className="sticky top-0 left-0 right-0 h-16 sm:h-18 bg-gradient-to-r from-[#06000a] via-[#0a000f] to-[#06000a] border-b border-red-900/60 backdrop-blur-md z-50 shadow-[0_4px_25px_rgba(255,0,0,0.25)]">
+  <div className="max-w-7xl mx-auto flex items-center justify-between h-full px-4 sm:px-6 lg:px-10">
+    
+    {/* LOGO - Improved with better accessibility */}
+    <h1 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-400 to-red-600 font-mono tracking-widest drop-shadow-[0_0_10px_rgba(255,0,0,0.7)] animate-pulse hover:animate-none transition-all duration-300 cursor-default">
+      WOLFGUIDER
+    </h1>
+
+    {/* DESKTOP NAVIGATION - Improved spacing and transitions */}
+    <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm xl:text-base font-semibold font-mono">
+      <a
+        href="#tools"
+        className="text-gray-300 hover:text-red-400 transition-all duration-300 relative group"
+        aria-label="View our tools"
+      >
+        TOOLS
+        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-red-500 to-red-400 group-hover:w-full transition-all duration-300"></span>
+      </a>
+
+      <button
+        onClick={() => setCurrentView('blog')}
+        className="text-gray-300 hover:text-red-400 transition-all duration-300 relative group"
+        aria-label="Read insights"
+      >
+        INSIGHTS
+        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-red-500 to-red-400 group-hover:w-full transition-all duration-300"></span>
+      </button>
+
+      <a
+        href="#pricing"
+        className="text-gray-300 hover:text-red-400 transition-all duration-300 relative group"
+        aria-label="View pricing"
+      >
+        PRICING
+        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-red-500 to-red-400 group-hover:w-full transition-all duration-300"></span>
+      </a>
+
+      {/* GET ACCESS BUTTON - Enhanced with better hover effects */}
+      <button
+        onClick={handleAccessClick}
+        className="px-5 py-2.5 text-sm font-bold rounded-xl bg-gradient-to-r from-red-700 via-red-600 to-red-700 hover:from-red-600 hover:via-red-500 hover:to-red-600 transition-all duration-300 shadow-[0_0_20px_rgba(255,0,0,0.4)] hover:shadow-[0_0_35px_rgba(255,0,0,0.7)] border border-red-800/60 hover:border-red-600/80 hover:scale-105 active:scale-95"
+        aria-label="Get access to Wolfguider"
+      >
+        GET ACCESS
+      </button>
+    </div>
+
+    {/* MOBILE MENU BUTTON - Improved with better styling */}
+    <button
+      onClick={() => setMobileMenuOpen(true)}
+      className="lg:hidden text-gray-400 hover:text-red-500 transition-all duration-300 p-2 rounded-lg hover:bg-red-950/30"
+      aria-label="Open mobile menu"
+    >
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  {/* MOBILE MENU - Added for completeness */}
+  
+</nav>
 
       {/* Mobile Menu */}
       <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
@@ -1484,7 +1740,7 @@ const WolfGuider = () => {
                     onClick={() => setShowVideoModal(true)}
                     className="px-4 py-3 sm:px-6 sm:py-3 lg:px-8 lg:py-4 xl:px-10 xl:py-4 w-full sm:w-auto text-sm sm:text-base lg:text-lg xl:text-xl font-bold rounded-lg sm:rounded-xl bg-red-700 hover:bg-red-600 transition-all duration-500 ease-in-out shadow-xl sm:shadow-2xl shadow-red-900/70 transform hover:scale-[1.03] sm:hover:scale-[1.05] border-2 border-red-700 neon-border"
                   >
-                    LIVE EXPLOIT SIMULATION
+                    LIVE EXPLOIT 
                   </button>
                   <button
                     onClick={() => setCurrentView('blog')}

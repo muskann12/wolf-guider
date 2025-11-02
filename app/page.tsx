@@ -955,135 +955,132 @@ const ToolExecutionModal = ({
 
       {/* Professional TON Wallet Access Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-black/80">
-          <div className="w-full max-w-md bg-[#0c0018] border-2 border-purple-600 shadow-[0_0_20px_rgba(147,51,234,0.5)] rounded-lg overflow-hidden">
-            {/* Header */}
-            <div className="flex justify-between items-center p-4 bg-purple-900/30 border-b border-purple-600">
-              <h5 className="text-lg font-mono text-purple-300 font-bold uppercase tracking-tight flex items-center">
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
-                </svg>
-                PROFESSIONAL ACCESS
-              </h5>
-              <button
-                onClick={() => setShowPaymentModal(false)}
-                className="text-purple-300 hover:text-white transition-colors p-1 rounded"
-                aria-label="Close payment"
-              >
-                <Icon name="close" className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Content */}
-            <div className="p-4 font-mono">
-              {!emailSubmitted ? (
-                <>
-                  <div className="text-purple-400 font-bold mb-3 text-sm text-center">
-                    GET PROFESSIONAL ACCESS TO {tool.name.toUpperCase()}
-                  </div>
-                  
-                  <div className="bg-black/50 p-3 rounded border border-gray-600 mb-4">
-                    <div className="text-yellow-400 text-sm mb-2 font-bold">
-                      🚀 Professional Features:
-                    </div>
-                    <ul className="text-xs text-gray-300 space-y-1 list-disc list-inside">
-                      <li>Full tool access without Telegram</li>
-                      <li>Priority support & updates</li>
-                      <li>Advanced features unlocked</li>
-                      <li>Direct download access</li>
-                      <li>Lifetime updates</li>
-                    </ul>
-                  </div>
-
-                  <div className="mb-4">
-                    <div className="text-gray-400 text-xs mb-1 flex justify-between">
-                      <span>TON WALLET ADDRESS:</span>
-                      <button
-                        onClick={copyToClipboard}
-                        className="text-purple-400 hover:text-purple-300 text-xs"
-                      >
-                        {copied ? "Copied!" : "Copy"}
-                      </button>
-                    </div>
-                    <div className="bg-black p-3 rounded border border-purple-600 text-green-400 text-sm font-mono break-all">
-                      {tonWalletAddress}
-                    </div>
-                  </div>
-
-                  <div className="bg-yellow-900/20 border border-yellow-600 rounded p-3 mb-4">
-                    <div className="text-yellow-400 text-xs font-bold mb-1">
-                      💡 Payment Instructions:
-                    </div>
-                    <ol className="text-xs text-yellow-300 space-y-1 list-decimal list-inside">
-                      <li>Send payment to the TON wallet address above</li>
-                      <li>Enter your email below</li>
-                      <li>We'll email you direct access within 24 hours</li>
-                      <li>No Telegram required!</li>
-                    </ol>
-                  </div>
-
-                  <form onSubmit={handleEmailSubmit} className="space-y-3">
-                    <div>
-                      <label className="text-gray-400 text-xs mb-1 block">
-                        YOUR EMAIL FOR ACCESS:
-                      </label>
-                      <input
-                        type="email"
-                        value={userEmail}
-                        onChange={(e) => setUserEmail(e.target.value)}
-                        placeholder="Enter your email for direct access"
-                        className="w-full px-3 py-2 bg-gray-900 text-white text-sm rounded border border-gray-600 focus:border-purple-500 focus:outline-none"
-                        required
-                      />
-                    </div>
-                    
-                    <div className="flex gap-2 pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setShowPaymentModal(false)}
-                        className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white text-sm font-bold rounded transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-bold rounded transition-colors"
-                      >
-                        Confirm Payment
-                      </button>
-                    </div>
-                  </form>
-                </>
-              ) : (
-                <div className="text-center py-6">
-                  <div className="text-green-400 text-4xl mb-3">✓</div>
-                  <div className="text-green-400 font-bold mb-2 text-lg">
-                    Payment Received!
-                  </div>
-                  <div className="text-gray-300 text-sm mb-4">
-                    We've received your payment details. You'll get direct access to 
-                    <span className="text-purple-400 font-bold"> {tool.name}</span> 
-                    via email within 24 hours.
-                  </div>
-                  <div className="text-yellow-400 text-xs bg-yellow-900/20 p-2 rounded border border-yellow-600">
-                    ✅ No Telegram required - Check your email soon!
-                  </div>
-                  <button
-                    onClick={() => setShowPaymentModal(false)}
-                    className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded transition-colors"
-                  >
-                    Close
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="w-full max-w-sm bg-gradient-to-br from-[#0c0018] to-[#1a0033] border border-purple-500/50 rounded-xl shadow-2xl shadow-purple-500/20">
+      {/* Header */}
+      <div className="flex justify-between items-center p-4 bg-gradient-to-r from-purple-900/40 to-pink-900/40 border-b border-purple-500/30">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <h3 className="text-white font-bold text-sm tracking-wider">PRO ACCESS</h3>
         </div>
-      )}
+        <button
+          onClick={() => setShowPaymentModal(false)}
+          className="text-purple-300 hover:text-white transition-colors p-1"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        {!emailSubmitted ? (
+          <>
+            {/* Features */}
+            <div className="mb-4">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-1 h-4 bg-purple-500 rounded"></div>
+                <h4 className="text-white font-bold text-sm">Premium Features</h4>
+              </div>
+              <div className="space-y-2 text-xs text-gray-300">
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-400">✓</span>
+                  <span>Full tool access</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-400">✓</span>
+                  <span>Priority support</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-400">✓</span>
+                  <span>Lifetime updates</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Wallet Address */}
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-400 text-xs">TON WALLET:</span>
+                <button
+                  onClick={copyToClipboard}
+                  className="text-purple-400 hover:text-purple-300 text-xs flex items-center space-x-1"
+                >
+                  <span>{copied ? "Copied!" : "Copy"}</span>
+                </button>
+              </div>
+              <div className="bg-black/50 p-3 rounded-lg border border-purple-500/30">
+                <code className="text-green-400 text-xs break-all font-mono">
+                  {tonWalletAddress}
+                </code>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 mb-4">
+              <div className="text-purple-300 text-xs font-medium mb-2">Payment Steps:</div>
+              <ol className="text-xs text-gray-300 space-y-1">
+                <li>1. Send payment to above address</li>
+                <li>2. Enter your email</li>
+                <li>3. Get access within 24h</li>
+              </ol>
+            </div>
+
+            {/* Email Form */}
+            <form onSubmit={handleEmailSubmit} className="space-y-3">
+              <div>
+                <input
+                  type="email"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full px-3 py-2 bg-black/50 border border-gray-600 rounded-lg text-white text-sm placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                  required
+                />
+              </div>
+              
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPaymentModal(false)}
+                  className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-sm font-medium rounded-lg transition-all"
+                >
+                  Confirm
+                </button>
+              </div>
+            </form>
+          </>
+        ) : (
+          /* Success State */
+          <div className="text-center py-4">
+            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h4 className="text-white font-bold text-sm mb-2">Payment Confirmed!</h4>
+            <p className="text-gray-300 text-xs mb-4">
+              Access to <span className="text-purple-400">{tool.name}</span> will be sent to your email within 30 Minutes.
+            </p>
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+)}
     </>
   );
 };

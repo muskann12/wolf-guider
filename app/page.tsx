@@ -935,19 +935,19 @@ const ToolExecutionModal = ({
               </a>
 
               {/* TON Wallet - Professional Access */}
-              <button
-                onClick={() => setShowPaymentModal(true)}
-                className="px-4 py-3 text-sm font-bold rounded bg-purple-600 hover:bg-purple-500 transition-all shadow shadow-purple-900/30 flex items-center justify-center"
-              >
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
-                </svg>
-                PRO ACCESS (TON)
-              </button>
+            <button
+  onClick={() => setShowPaymentModal(true)}
+  className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 flex items-center justify-center group hover:scale-105 active:scale-95"
+>
+  <svg
+    className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+  </svg>
+  PRO ACCESS
+</button>
             </div>
           </div>
         </div>
@@ -996,6 +996,10 @@ const ToolExecutionModal = ({
                   <span className="text-green-400">✓</span>
                   <span>Lifetime updates</span>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-400">✓</span>
+                  <span>Every tool includes a modern, intuitive designed UI</span>
+                </div>
               </div>
             </div>
 
@@ -1023,7 +1027,8 @@ const ToolExecutionModal = ({
               <ol className="text-xs text-gray-300 space-y-1">
                 <li>1. Send payment to above address</li>
                 <li>2. Enter your email</li>
-                <li>3. Get access within 24h</li>
+                <li>3. Get access within 30 Minutes</li>
+                <li>4. You will get your terminal access on your mail</li>
               </ol>
             </div>
 
